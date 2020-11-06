@@ -86,7 +86,7 @@ public with sharing class SFZoom_LightningEventHandler {
             if(SFZoom_AccessUtil.objectIsAccessible('RecordType') && SFZoom_AccessUtil.objectIsQueryable('RecordType') 
                && SFZoom_AccessUtil.fieldsAreAccessible('RecordType', new List<String>{'DeveloperName', 'SObjectType'}))
             {
-                List<RecordType> listOfZoomRecordType = [SELECT DeveloperName FROM RecordType WHERE SObjectType = 'Zoom_Meeting__c'];            
+                List<RecordType> listOfZoomRecordType = [SELECT DeveloperName FROM RecordType WHERE SObjectType = 'Zoom_Meeting__c' and isActive = true];
                 for(RecordType eventRecordType : listOfZoomRecordType){
                     mapOfZoomEventRecordTypeIdWithName.put(eventRecordType.Id, eventRecordType.DeveloperName);
                 }

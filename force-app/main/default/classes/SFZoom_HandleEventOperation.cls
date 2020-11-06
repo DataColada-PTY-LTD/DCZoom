@@ -67,7 +67,12 @@ global without sharing class SFZoom_HandleEventOperation {
                 if(listOfEventsToUpdate != null && !listOfEventsToUpdate.isEmpty()){
                     listOfEventsToUpdate[0].Zoom_Registration_Status__c = Label.Registered_Meeting_Status;
                     listOfEventsToUpdate[0].Zoom_Registration_Id__c = (String)mapOfResponse.get('registrant_id'); 
-                    listOfEventsToUpdate[0].Joining_URL__c = (String)mapOfResponse.get('join_url');
+
+                    String joinUrl = (String)mapOfResponse.get('join_url' );
+                    if( String.isNotBlank(joinUrl)) {
+                        listOfEventsToUpdate[0].Joining_URL__c = joinUrl.length() > 255 ? joinUrl.substring(0, 255) : joinUrl;
+                    }
+
                     //False Positive - The site user license doesn't allow to have the permission: Edit Events
                     //INSUFFICIENT_ACCESS_ON_CROSS_REFERENCE_ENTITY, insufficient access rights on object
                     UPDATE listOfEventsToUpdate;

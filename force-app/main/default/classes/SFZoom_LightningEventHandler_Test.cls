@@ -240,6 +240,7 @@ public class SFZoom_LightningEventHandler_Test {
         Zoom_Meeting__c zoomMeetingToUpdate = new Zoom_Meeting__c(id=zoomMeeting.Id);
         zoomMeetingToUpdate.Agenda__c = 'Test Updated Meeting Agenda';
         zoomMeetingToUpdate.Start_Date__c = System.today();
+        zoomMeetingToUpdate.Start_Time__c = Time.newInstance(18, 30, 2, 20);
         zoomMeetingToUpdate.Duration__c = 45;
         zoomMeetingToUpdate.Topic__c = 'Test Updated Meeting Topic';
         zoomMeetingToUpdate.Join_before_Host__c = true;

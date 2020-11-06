@@ -23,4 +23,4 @@ The app is Lightning compatible and has a similar UI for both the Salesforce Cla
 
 Below is the salesforce installation package url
 
-Installation url : [dcZoomConnector v1.7 ](https://login.salesforce.com/packaging/installPackage.apexp?p0=04t2x000003alXd&isdtp=p1).
+Installation url : [dcZoomConnector v1.8 ](https://login.salesforce.com/packaging/installPackage.apexp?p0=04t2x000004H0XF).

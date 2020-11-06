@@ -27,7 +27,7 @@
     Date        : 01 Nov 2018.
     Author      : DataColada Pty Ltd
 *******************************************************************************************************************/
-global with sharing class SFZoom_MeetingHandlerExtension{
+global without sharing class SFZoom_MeetingHandlerExtension{
     public Zoom_Meeting__c zoomMeeting {get; set;}
     public Boolean isEditEnabled {get; set;}
     public Time meetingStartTime {get; set;}  
@@ -396,17 +396,17 @@ global with sharing class SFZoom_MeetingHandlerExtension{
         Author       : DataColada Pty Ltd
     *******************************************************************************************************************/
     private void FindEventType(String recordTypeId){
-        if(String.isNotBlank(recordTypeId)){
-            String MeetingRecordTypeId = Schema.SObjectType.Zoom_Meeting__c.getRecordTypeInfosByName().get(Label.Meeting_Record_Type_Name).getRecordTypeId();
-            if(recordTypeId.containsIgnoreCase(MeetingRecordTypeId) || MeetingRecordTypeId.containsIgnoreCase(recordTypeId)){
-                eventType = Label.Meeting_Record_Type_Name;
-                isWebinar = false;
-            }else{
-                String webinarRecordTypeId = Schema.SObjectType.Zoom_Meeting__c.getRecordTypeInfosByName().get(Label.Webinar_Record_Type_Name).getRecordTypeId();
-                if(recordTypeId.containsIgnoreCase(webinarRecordTypeId) || webinarRecordTypeId.containsIgnoreCase(recordTypeId)){
-                    eventType = Label.Webinar_Record_Type_Name;
-                    isWebinar = true;
-                 }
+        Boolean haveAccess = false;
+
+        for ( Schema.RecordTypeInfo info :  Schema.SObjectType.Zoom_Meeting__c.getRecordTypeInfosByName().values()) {
+            haveAccess = info.isActive() && info.isAvailable() ;
+            isWebinar = false;
+            if( info.getRecordTypeId() == recordTypeId && haveAccess ) {
+                eventType = info.getName();
+                isWebinar = eventType.containsIgnoreCase(Label.Webinar_Record_Type_Name) ? true: false;
+            }
+            else if(info.isDefaultRecordTypeMapping() && haveAccess ) {
+                eventType = info.getName();
             }
         }
     }
@@ -1355,7 +1355,12 @@ global with sharing class SFZoom_MeetingHandlerExtension{
                         if(!listOfEvents.isEmpty()){
                             listOfEvents[0].Zoom_Registration_Status__c = Label.Registered_Meeting_Status;
                             listOfEvents[0].Zoom_Registration_Id__c = String.valueOf(mapOfResponse.get('registrant_id'));
-                            listOfEvents[0].Joining_URL__c = String.valueOf(mapOfResponse.get('join_url'));
+
+                            String joinUrl = (String)mapOfResponse.get('join_url' );
+                            if( String.isNotBlank(joinUrl)) {
+                                listOfEvents[0].Joining_URL__c = joinUrl.length() > 255 ? joinUrl.substring(0, 255) : joinUrl;
+                            }
+
                             UPDATE listOfEvents;
                             /*if(SFZoom_AccessUtil.objectIsUpdateable('Event') && SFZoom_AccessUtil.hasEditAccess(listOfEvents[0].Id) && 
                               SFZoom_AccessUtil.fieldsAreUpdateable('Event', listOfFields)){
