@@ -1,4 +1,4 @@
-/*
+t/*
     The MIT License
     Copyright © 2020 DataColada Pty Ltd
 
@@ -29,7 +29,7 @@
 
 *******************************************************************************************************************/
 public with sharing class SFZoom_MeetingManagerUtility{
-    
+
     /******************************************************************************************************************
         Method Name  : CreateMeetingInZoomAccount
         Description  : It creates meeting in the Zoom Account based on the user input.
@@ -40,10 +40,15 @@ public with sharing class SFZoom_MeetingManagerUtility{
     public static String CreateMeetingInZoomAccount(String dataToSend){
         HTTPResponse response = new HTTPResponse();
         try{
+            system.debug('@@@ CreateMeetingInZoomAccount => ' + dataToSend);
+
             String userId = FindUserIdFromCustomSetting();
             if(String.isNotBlank(userId)){
-                String endPointURL = Label.Zoom_Base_EndPoint_URL+'users/'+userId+'/meetings'; 
-                HttpRequest req = constructHttpRequestHeader('POST', endPointUrl); 
+                String endPointURL = Label.Zoom_Base_EndPoint_URL+'users/'+userId+'/meetings';
+
+                System.debug('@@@ endPointUrl => ' + endPointURL);
+
+                HttpRequest req = constructHttpRequestHeader('POST', endPointUrl);
                 req.setBody(dataToSend);
                 Http http = new Http();
                 response = http.send(req);
@@ -66,7 +71,7 @@ public with sharing class SFZoom_MeetingManagerUtility{
         HTTPResponse response = new HTTPResponse();
         try{
             String endPointURL = Label.Zoom_Base_EndPoint_URL+'sf/meetings/'+updateMeetingId;
-            HttpRequest req = constructHttpRequestHeader('PUT', endPointUrl); 
+            HttpRequest req = constructHttpRequestHeader('PUT', endPointUrl);
             req.setBody(dataToSend);
             Http http = new Http();
             response = http.send(req);
@@ -75,7 +80,7 @@ public with sharing class SFZoom_MeetingManagerUtility{
         }
         return response.getBody();
     }
-    
+
     /******************************************************************************************************************
         Method Name  : CancelMeetingInZoomAccount
         Description  : It cancels meeting from the Zoom Account.
@@ -86,7 +91,7 @@ public with sharing class SFZoom_MeetingManagerUtility{
     public static HTTPResponse CancelMeetingInZoomAccount(String meetingId){
         HTTPResponse response = new HTTPResponse();
         try{
-            String endPointURL = Label.Zoom_Base_EndPoint_URL+'meetings/'+meetingId; 
+            String endPointURL = Label.Zoom_Base_EndPoint_URL+'meetings/'+meetingId;
             HttpRequest req = constructHttpRequestHeader('DELETE', endPointUrl);
             Http http = new Http();
             if(Test.isRunningTest()){
@@ -99,7 +104,7 @@ public with sharing class SFZoom_MeetingManagerUtility{
         }
         return response;
     }
-    
+
     /******************************************************************************************************************
         Method Name  : AddMeetingRegistrants
         Description  : It adds meeting registrants to the supplied meeting.
@@ -111,20 +116,23 @@ public with sharing class SFZoom_MeetingManagerUtility{
     public static HTTPResponse AddMeetingRegistrants(String meetingId, String requestBody){
         HTTPResponse response = new HTTPResponse();
         try{
-            String endPointURL = Label.Zoom_Base_EndPoint_URL+'meetings/'+meetingId+'/registrants'; 
+            String endPointURL = Label.Zoom_Base_EndPoint_URL+'meetings/'+meetingId+'/registrants';
+            System.debug('@@@ AddMeetingRegistrants::endPointURL' + endPointURL);
+            System.debug('@@@ AddMeetingRegistrants::requestBody' + requestBody);
             HttpRequest req = constructHttpRequestHeader('POST', endPointUrl);
             req.setBody(requestBody);
             Http http = new Http();
             response = http.send(req);
+            System.debug('@@@ AddMeetingRegistrants::requestBody' + response.getBody());
         }Catch(Exception ex){
             System.debug('SF Zoom Meeting Manager Utility - Add Meeting Registrants - Exception: ' + ex.getMessage());
         }
         return response;
     }
-    
+
     /******************************************************************************************************************
         Method Name  : getMeetingRecordingDetails
-        Description  : It gets the recording details from the Zoom 
+        Description  : It gets the recording details from the Zoom
         Date         : 06 Mar 2019.
         Parameter1   : List of event records
         Author      : DataColada Pty Ltd
@@ -134,7 +142,7 @@ public with sharing class SFZoom_MeetingManagerUtility{
         try{
             if(String.isNotBlank(meetingId)) {
                 String endPointUrl = Label.Zoom_Base_EndPoint_URL + 'meetings/'+ meetingId + '/recordings';
-                HttpRequest req = SFZoom_MeetingManagerUtility.constructHttpRequestHeader('GET', endPointUrl); 
+                HttpRequest req = SFZoom_MeetingManagerUtility.constructHttpRequestHeader('GET', endPointUrl);
                 Http http = new Http();
                 if(!Test.isRunningTest()){
                     response = http.send(req);
@@ -142,14 +150,14 @@ public with sharing class SFZoom_MeetingManagerUtility{
                     response.setStatusCode(200);
                     String responseBody = '{"id":125886484,"recording_count":2,"recording_files":[{"play_url":"https://api.zoom.us/recording/play/v645MvmvNs1I7REwePJJskTpGNnGZHKRQ4uPDjuOtKrLRq7L_k54soj2SsahxusI"}]}';
                     response.setBody(responseBody);
-                }              
+                }
             }
         }Catch(Exception ex){
             System.debug('SF Zoom Service To Update Participants Details - set Meeting Url For Attendees - Exception: ' + ex.getMessage() + ex.getStackTraceString());
-        }        
+        }
         return response;
     }
-    
+
     /******************************************************************************************************************
         Method Name  : FindRecordingPlayUrl
         Description  : It fetches the recorded url from zoom and the recent recorded url link.
@@ -171,7 +179,7 @@ public with sharing class SFZoom_MeetingManagerUtility{
         }
        return playURL;
     }
-    
+
     /******************************************************************************************************************
         Method Name  : CreateWebinarInZoomAccount
         Description  : It creates webinar in the Zoom Account based on the user input.
@@ -183,12 +191,14 @@ public with sharing class SFZoom_MeetingManagerUtility{
         HTTPResponse response = new HTTPResponse();
         try{
             String userId = FindUserIdFromCustomSetting();
+            System.debug('@@@ CreateWebinarInZoomAccount::dataToSend => ' + dataToSend);
             if(String.isNotBlank(userId)){
-                String endPointURL = Label.Zoom_Base_EndPoint_URL+'users/'+userId+'/webinars'; 
+                String endPointURL = Label.Zoom_Base_EndPoint_URL+'users/'+userId+'/webinars';
                 HttpRequest req = constructHttpRequestHeader('POST', endPointUrl);
                 req.setBody(dataToSend);
                 Http http = new Http();
                 response = http.send(req);
+                System.debug('@@@ CreateWebinarInZoomAccount::response => ' + response.getBody());
             }
         }Catch(Exception ex){
             System.debug('SFZoom Meeting Manager Utility - Create Webinar In ZoomAccount - Exception: ' + ex.getMessage());
@@ -217,7 +227,7 @@ public with sharing class SFZoom_MeetingManagerUtility{
         }
         return response.getBody();
     }
-    
+
     /******************************************************************************************************************
         Method Name  : CancelWebinarInZoomAccount
         Description  : It cancels webinar from the Zoom Account.
@@ -236,7 +246,7 @@ public with sharing class SFZoom_MeetingManagerUtility{
             }else{
                 response = http.send(req);
             }
-            
+
         }Catch(Exception ex){
             System.debug('SFZoom Meeting Manager Utility - Cancel Webinar In Zoom Account - Exception: ' + ex.getMessage());
         }
@@ -264,22 +274,27 @@ public with sharing class SFZoom_MeetingManagerUtility{
         }
         return response;
     }
-    
+
     /******************************************************************************************************************
         Method Name  : FindAuthorizationTokenFromCustomSetting
         Description  : It finds authorization token from the custom setting named 'Zoom Configuration Settings'.
         Date         : 01 Nov 2018.
         Author      : DataColada Pty Ltd
+
+        Last modified by  : DataColada Pty Ltd
+        Date modified     : 27/09/2022
+        History           : Modified this method to accept the new oauth protocol if the user chooses it
+                          : from the custom settings table
     *******************************************************************************************************************/
-    private static String FindAuthorizationTokenFromCustomSetting(){
+    public static String FindAuthorizationTokenFromCustomSetting(){
         String authToken;
         Zoom_Configuration_Settings__c zoomConfigurationDetails = Zoom_Configuration_Settings__c.getValues(Label.Config_Details_Custom_Setting_Name);
         If(zoomConfigurationDetails != null){
-            authToken = zoomConfigurationDetails.Zoom_Authorization_Token__c;
+            authToken = zoomConfigurationDetails.oauth_connection__c ? 'Bearer ' + SFZoom_ServerToServerOauth.Instance().getAccessToken() :  zoomConfigurationDetails.Zoom_Authorization_Token__c;
         }
         return authToken;
     }
-    
+
     /******************************************************************************************************************
         Method Name  : FindUserIdFromCustomSetting
         Description  : It finds User Id from the custom setting named 'Zoom Configuration Settings'.
@@ -294,7 +309,7 @@ public with sharing class SFZoom_MeetingManagerUtility{
         }
         return zoomAccountUserId;
     }
-    
+
     /******************************************************************************************************************
         Method Name  : FindZoomURLFromCustomSetting
         Description  : It finds zoom org URL from the custom setting named 'Zoom Configuration Settings'.
@@ -309,7 +324,7 @@ public with sharing class SFZoom_MeetingManagerUtility{
         }
         return zoomURL;
     }
-    
+
     /******************************************************************************************************************
         Method Name  : sendEmail
         Description  : It sends email notification for the event invite.
@@ -317,21 +332,32 @@ public with sharing class SFZoom_MeetingManagerUtility{
         Date         : 22 Nov 2018.
         Author      : DataColada Pty Ltd
     *******************************************************************************************************************/
-    public static String sendEmail(List<String> listOfToEmailAddress, List<String> listOfCCEmailAddress, String mailBody, String templateId, 
+    public static String sendEmail(List<String> listOfToEmailAddress, List<String> listOfCCEmailAddress, String mailBody, String templateId,
                                  String senderDisplayName, String ReplyToEmailAddress, String emailSubject, String targetObjectId,
                                  List<Messaging.Emailfileattachment> fileAttachments){
         try{
             List<Messaging.SingleEmailMessage> mails = new List<Messaging.SingleEmailMessage>();
             // Create a new Email
             Messaging.SingleEmailMessage mail = new Messaging.SingleEmailMessage();
-            
+
             if(listOfToEmailAddress != null && !listOfToEmailAddress.isEmpty()){
                 //Set list of people who should get the email
                 mail.setToAddresses(listOfToEmailAddress);
             }
             // Set who the email is sent from
             mail.setReplyTo(ReplyToEmailAddress);
-            mail.setSenderDisplayName(senderDisplayName);
+            // Set from email address
+            if(String.isNotBlank(ReplyToEmailAddress)){
+                OrgWideEmailAddress[] owea = [SELECT Id FROM OrgWideEmailAddress WHERE Address =:ReplyToEmailAddress LIMIT 1];
+                if(!owea.isEmpty()){
+                    mail.setOrgWideEmailAddressId(owea.get(0).Id);
+                } else {
+                    mail.setSenderDisplayName(senderDisplayName);
+                }
+            } else {
+                                mail.setSenderDisplayName(senderDisplayName);
+            }
+
             // (Optional) Set list of people who should be CC'ed
             if(listOfCCEmailAddress != null && !listOfCCEmailAddress.isEmpty()){
                 mail.setCcAddresses(listOfCCEmailAddress);
@@ -357,7 +383,7 @@ public with sharing class SFZoom_MeetingManagerUtility{
         }
         return null;
     }
-    
+
     /******************************************************************************************************************
         Method Name : GenertePrivateCryptoKey
         Description : This method is used to generate private crypto Key.
@@ -374,7 +400,7 @@ public with sharing class SFZoom_MeetingManagerUtility{
         }
         return randomCryptoKey;
     }
-    
+
     /******************************************************************************************************************
         Method Name : DecryptStringToBlob
         Description : This method is used to generate private crypto Key.
@@ -385,7 +411,7 @@ public with sharing class SFZoom_MeetingManagerUtility{
         Blob cryptoKey = String.isNotBlank(dataToDecrypt) ? EncodingUtil.base64Decode(dataToDecrypt) : null;
         return cryptoKey;
     }
-    
+
 
     /******************************************************************************************************************
         Method Name : EncryptData
@@ -402,7 +428,7 @@ public with sharing class SFZoom_MeetingManagerUtility{
         Blob encryptedData = data != null && data.size() > 0 && cryptoKey != null && cryptoKey.size() > 0 ? Crypto.encryptWithManagedIV('AES256', cryptoKey, data) : null;
         return encryptedData;
     }
-    
+
     /******************************************************************************************************************
         Method Name : DecryptData
         Description : This method is used to decrypt data using cryptoKey and AES256 Algorithm.
@@ -413,14 +439,14 @@ public with sharing class SFZoom_MeetingManagerUtility{
     *******************************************************************************************************************/
     private static String DecryptData(Blob encryptedData, Blob cryptoKey){
         // Decrypt the data - the first 16 bytes contain the initialization vector
-        Blob decryptedData = encryptedData != null && encryptedData.size() > 0 && cryptoKey != null && cryptoKey.size() > 0 ? 
+        Blob decryptedData = encryptedData != null && encryptedData.size() > 0 && cryptoKey != null && cryptoKey.size() > 0 ?
                                 Crypto.decryptWithManagedIV('AES256', cryptoKey, encryptedData) : null;
-        
+
         // Decode the decrypted data for subsequent use
         String decryptedDataString = decryptedData != null && decryptedData.size() > 0 ? decryptedData.toString() : null;
         return decryptedDataString;
     }
-    
+
     /******************************************************************************************************************
         Method Name : DecryptData
         Description : This method is used to decrypt data using cryptoKey and AES256 Algorithm.
@@ -434,9 +460,9 @@ public with sharing class SFZoom_MeetingManagerUtility{
             if(String.isNotBlank(encryptedData)){
                 Blob decryptedCustomValue = DecryptStringToBlob(encryptedData);
                 Zoom_Configuration_Settings__c zoomConfigurationDetails = Zoom_Configuration_Settings__c.getValues(Label.Config_Details_Custom_Setting_Name);
-                String privateKeyValue = zoomConfigurationDetails != null && zoomConfigurationDetails.Crypto_Key__c != null ? 
+                String privateKeyValue = zoomConfigurationDetails != null && zoomConfigurationDetails.Crypto_Key__c != null ?
                     zoomConfigurationDetails.Crypto_Key__c : Label.Default_Crypto_Key;
-                Blob cryptoKey = DecryptStringToBlob(privateKeyValue); 
+                Blob cryptoKey = DecryptStringToBlob(privateKeyValue);
                 actualData = DecryptData(decryptedCustomValue, cryptoKey);
             }
         }Catch(Exception ex) {
@@ -444,7 +470,7 @@ public with sharing class SFZoom_MeetingManagerUtility{
         }
         return actualData;
     }
-    
+
     /******************************************************************************************************************
         Method Name : EncryptData
         Description : This method is used to encrypt data using cryptoKey and AES256 Algorithm.
@@ -457,7 +483,7 @@ public with sharing class SFZoom_MeetingManagerUtility{
         try{
             if(String.isNotBlank(dataToEncrypt)){
                 Zoom_Configuration_Settings__c zoomConfigurationDetails = Zoom_Configuration_Settings__c.getValues(Label.Config_Details_Custom_Setting_Name);
-                String privateKeyValue = zoomConfigurationDetails != null && zoomConfigurationDetails.Crypto_Key__c != null ? 
+                String privateKeyValue = zoomConfigurationDetails != null && zoomConfigurationDetails.Crypto_Key__c != null ?
                     zoomConfigurationDetails.Crypto_Key__c : Label.Default_Crypto_Key;
                 if(String.isNotBlank(privateKeyValue)){
                     Blob cryptoKey = DecryptStringToBlob(privateKeyValue);
@@ -471,7 +497,7 @@ public with sharing class SFZoom_MeetingManagerUtility{
         }
         return encrypteddata;
     }
-    
+
     /******************************************************************************************************************
         Method Name : FindSetupObjectNameFromZoomMeeting
         Description : This method is used to find all the lookup fields on the Zoom Meeting object which is used to setup the zoom Meeting.
@@ -490,14 +516,14 @@ public with sharing class SFZoom_MeetingManagerUtility{
                         query += meetingField;
                     }else{
                         query += ', '+meetingField;
-                    }                
+                    }
                 }
                 query += ' FROM Zoom_Meeting__c WHERE ID = \''+String.escapeSingleQuotes(SFMeetingId)+'\' LIMIT 1';
-                if(SFZoom_AccessUtil.hasReadAccess(String.escapeSingleQuotes(sfMeetingId)) 
-                   && SFZoom_AccessUtil.objectIsAccessible('Zoom_Meeting__c') 
-                   && SFZoom_AccessUtil.objectIsQueryable('Zoom_Meeting__c') 
+                if(SFZoom_AccessUtil.hasReadAccess(String.escapeSingleQuotes(sfMeetingId))
+                   && SFZoom_AccessUtil.objectIsAccessible('Zoom_Meeting__c')
+                   && SFZoom_AccessUtil.objectIsQueryable('Zoom_Meeting__c')
                    && SFZoom_AccessUtil.fieldsAreAccessible('Zoom_Meeting__c', listOfSetupObjectFields)){
-                       
+
                        listOfMeetings = Database.query(query);
                        if(!listOfMeetings.isEmpty()){
                            for(String meetingField : listOfSetupObjectFields){
@@ -525,11 +551,11 @@ public with sharing class SFZoom_MeetingManagerUtility{
         List<String> listOfSetupOjbectName = new List<String>();
         try{
             Final String objName = 'Zoom_Meeting__c';
-            Map<string, Map<String, Schema.SObjectField>> objectFieldsMap = new map<string, Map<String, Schema.SObjectField>>(); 
+            Map<string, Map<String, Schema.SObjectField>> objectFieldsMap = new map<string, Map<String, Schema.SObjectField>>();
             Map<String, Schema.SObjectField> objectFields = Schema.getGlobalDescribe().get(objName).getDescribe().fields.getMap();
             for(Schema.SObjectField fld :objectFields.values()){
                 schema.describeFieldResult dfield = fld.getDescribe();
-                string fldType = string.valueOf(dfield.getType());   
+                string fldType = string.valueOf(dfield.getType());
                 string fldName = string.valueOf(dfield.Name);
                 if (fldType == 'REFERENCE' && fldName.endswith('__c')){ // Lookup field!
                     listOfSetupOjbectName.add(fldName);
@@ -540,7 +566,7 @@ public with sharing class SFZoom_MeetingManagerUtility{
         }
         return listOfSetupOjbectName;
     }
-    
+
     /******************************************************************************************************************
         Method Name : changeDateFormat
         Description : This method converts date format to DD-MMM-YYYY(Ex - 29-NOV-2018).
@@ -559,7 +585,7 @@ public with sharing class SFZoom_MeetingManagerUtility{
         }
         return convertedDate;
     }
-    
+
     /******************************************************************************************************************
         Method Name : convertedTime
         Description : This method converts time format to MMM-DD-YYYY(Ex - Jul 27, 2017).
@@ -574,7 +600,7 @@ public with sharing class SFZoom_MeetingManagerUtility{
         }
         return convertedTime;
     }
-    
+
     /******************************************************************************************************************
         Method Name : constructHttpRequestHeader
         Description : This method constructs HTTP Request header for making any http call.
@@ -587,10 +613,12 @@ public with sharing class SFZoom_MeetingManagerUtility{
         String accessToken = FindAuthorizationTokenFromCustomSetting();
         HttpRequest req = new HttpRequest();
         req.setEndpoint(endPointUrl);
-        req.setMethod(method);  
+        req.setMethod(method);
         req.setTimeout(120000);
-        req.setHeader('Content-Type', 'application/json');  
-        req.setHeader('Authorization', AccessToken);
+        req.setHeader('Content-Type', 'application/json');
+
+        req.setHeader('Authorization', accessToken);
+
         return req;
     }
 }

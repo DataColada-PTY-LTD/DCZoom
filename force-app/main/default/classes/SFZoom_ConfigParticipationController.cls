@@ -27,7 +27,7 @@
     Date        : 20 Nov 2018.
     Author       : DataColada Pty Ltd
 *******************************************************************************************************************/
-public with sharing class SFZoom_ConfigParticipationController {
+public without sharing class SFZoom_ConfigParticipationController {
     public Boolean isRegistered {get; set;}
     public Boolean isCancelled {get; set;}
     public ParticipantRegistrationDetails registrationDetails {get; set;}
@@ -159,6 +159,9 @@ public with sharing class SFZoom_ConfigParticipationController {
     public PageReference AddMeetingRegistrant(){
         try{
             String requestBody = JSON.serialize(registrationDetails);
+            System.debug('@@@ AddMeetingRegistrant => ' + requestBody );
+            System.debug('@@@ whoId => ' + whoId );
+            System.debug('@@@ salesforceZoomMeetingId => ' + salesforceZoomMeetingId );
             if(String.isNotBlank(whoId) && String.isNotBlank(salesforceZoomMeetingId)){
                 if(!listOfEvents.isEmpty()){
                     SFZoom_HandleEventOperation.AddRegistrantsAndUpdateEvent(whoId, salesforceZoomMeetingId, 

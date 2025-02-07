@@ -42,26 +42,26 @@ public class SFZoom_MeetingHandlerExtension_Test {
         System.assertNotEquals(null, zoomConfigurationDetailsInserted);
         Contact testLead = new Contact(FirstName = 'Test', LastName = 'Weebles Lead Test',  Email='testlead@mailinator.com');
         INSERT testLead;
-        System.assertNotEquals(null, testLead.Id); 
+        System.assertNotEquals(null, testLead.Id);
         Campaign campaignToTest = InsertCampaignWithCampaignMembersOfContact(testLead.Id);
         System.assertNotEquals(null, campaignToTest.Id);
         Test.startTest();
-        ApexPages.currentPage().getParameters().put('retURL','/'+campaignToTest.Id); 
-        
-        SFZoom_MeetingHandlerExtension meetinghandlerExtensionTest = new SFZoom_MeetingHandlerExtension(new ApexPages.StandardController(campaignToTest));               
+        ApexPages.currentPage().getParameters().put('retURL','/'+campaignToTest.Id);
+
+        SFZoom_MeetingHandlerExtension meetinghandlerExtensionTest = new SFZoom_MeetingHandlerExtension(new ApexPages.StandardController(campaignToTest));
         meetinghandlerExtensionTest.zoomMeeting.Topic__c = 'Test Meeting Topic';
         meetinghandlerExtensionTest.zoomMeeting.Agenda__c = 'Test Meeting Agenda';
         meetinghandlerExtensionTest.zoomMeeting.Start_Date__c = System.today().addDays(-1);
         meetinghandlerExtensionTest.meetingStartTime = Time.newInstance(18, 30, 2, 20);
         meetinghandlerExtensionTest.eventType='Meeting';
         meetinghandlerExtensionTest.CreateMeetingClassic();
-        
+
         ApexPages.Message[] pageMessages = ApexPages.getMessages();
         System.assertNotEquals(0, pageMessages.size());
         meetinghandlerExtensionTest.meetingStartTime = Time.newInstance(18, 30, 2, 20);
         meetinghandlerExtensionTest.zoomMeeting.Duration__c = 15;
         meetinghandlerExtensionTest.zoomMeeting.Start_Date__c = System.today().addDays(12);
-        
+
         meetinghandlerExtensionTest.zoomMeeting.Duration__c = 30;
         meetinghandlerExtensionTest.zoomMeeting.Topic__c = 'Test Meeting Topic';
         meetinghandlerExtensionTest.zoomMeeting.Join_before_Host__c = false;
@@ -73,18 +73,18 @@ public class SFZoom_MeetingHandlerExtension_Test {
         system.assertEquals(null,meetingRef);
         meetinghandlerExtensionTest.SelectAllInvitees();
         for (SFZoom_MeetingHandlerExtension.InviteeDetailsWrapper inviteeDetails : meetinghandlerExtensionTest.listOfNotInvitedRecordDetails) {
-            System.assertEquals(true, inviteeDetails.isSelected);   
-        }       
+            System.assertEquals(true, inviteeDetails.isSelected);
+        }
         PageReference meetinfInviteCl = meetinghandlerExtensionTest.SendEmailInviteClassic();
-        
+
         System.assertEquals(meetinfInviteCl.getURL(),ApexPages.currentPage().getParameters().get('retURL'));
         PageReference cancelOpPageReference = meetinghandlerExtensionTest.CancelOperation();
         Test.stopTest();
         System.assertEquals(cancelOpPageReference.getURL(),ApexPages.currentPage().getParameters().get('retURL'));
         List<Zoom_Meeting__c> listOfCreatedZoomMeetings = [SELECT Duration__c FROM Zoom_Meeting__c];
-        System.assertEquals(1, listOfCreatedZoomMeetings.size()); 
+        System.assertEquals(1, listOfCreatedZoomMeetings.size());
     }
-    
+
     /******************************************************************************************************************
         Method Name  : testWebinarSave
         Description  : It verifies save operation of the inline VF page for webinar with Auto_Register__c as true.
@@ -93,25 +93,25 @@ public class SFZoom_MeetingHandlerExtension_Test {
     *******************************************************************************************************************/
     @isTest
     static void testWebinarSave(){
-        InsertDefaultConfigSetting(); 
+        InsertDefaultConfigSetting();
         Zoom_Configuration_Settings__c zoomConfigurationDetailsInserted = Zoom_Configuration_Settings__c.getValues('Zoom Settings');
         System.assertNotEquals(null, zoomConfigurationDetailsInserted);
         Contact testLead = new Contact(FirstName = 'Test', LastName = 'Weebles Lead Test',  Email='testlead@mailinator.com');
         INSERT testLead;
         System.assertNotEquals(null, testLead.Id);
         Campaign campaignToTest = InsertCampaignWithCampaignMembersOfContact(testLead.Id);
-        System.assertNotEquals(null, campaignToTest.Id); 
-        
+        System.assertNotEquals(null, campaignToTest.Id);
+
         Test.startTest();
         ApexPages.currentPage().getParameters().put('retURL','/'+campaignToTest.Id);
-        Test.setMock(HttpCalloutMock.class, new SFZoom_LightningEventHandler_CalloutMock(false,true));   
+        Test.setMock(HttpCalloutMock.class, new SFZoom_LightningEventHandler_CalloutMock(false,true));
         SFZoom_MeetingHandlerExtension meetinghandlerExtensionTest = new SFZoom_MeetingHandlerExtension(new ApexPages.StandardController(campaignToTest));
         meetinghandlerExtensionTest.zoomMeeting.Topic__c = 'Test Meeting Topic';
         meetinghandlerExtensionTest.zoomMeeting.Agenda__c = 'Test Meeting Agenda';
-        meetinghandlerExtensionTest.zoomMeeting.Start_Date__c = System.today(); 
+        meetinghandlerExtensionTest.zoomMeeting.Start_Date__c = System.today();
         meetinghandlerExtensionTest.meetingStartTime = null;
-        meetinghandlerExtensionTest.eventType='Webinar';     
-        meetinghandlerExtensionTest.CreateWebinar(); 
+        meetinghandlerExtensionTest.eventType='Webinar';
+        meetinghandlerExtensionTest.CreateWebinar();
         ApexPages.Message[] pageMessages = ApexPages.getMessages();
         System.assertNotEquals(0, pageMessages.size());
         meetinghandlerExtensionTest.meetingStartTime = Time.newInstance(18, 30, 2, 20);
@@ -119,23 +119,23 @@ public class SFZoom_MeetingHandlerExtension_Test {
         meetinghandlerExtensionTest.zoomMeeting.Duration__c = 30;
         pageMessages = ApexPages.getMessages();
         System.assertNotEquals(0, pageMessages.size());
-        meetinghandlerExtensionTest.zoomMeeting.Duration__c = 30; 
+        meetinghandlerExtensionTest.zoomMeeting.Duration__c = 30;
         meetinghandlerExtensionTest.zoomMeeting.Topic__c = 'Test Meeting Topic';
         meetinghandlerExtensionTest.zoomMeeting.Join_before_Host__c = false;
         meetinghandlerExtensionTest.zoomMeeting.Start_Participant_Video_on_Meeting_Join__c = true;
         meetinghandlerExtensionTest.zoomMeeting.Enforce_Login__c = true;
         meetinghandlerExtensionTest.zoomMeeting.Start_Date__c = System.today().addDays(12);
         meetinghandlerExtensionTest.zoomMeeting.Auto_Register__c = true;
-        PageReference meetingRef = meetinghandlerExtensionTest.CreateWebinar(); 
+        PageReference meetingRef = meetinghandlerExtensionTest.CreateWebinar();
         System.assertEquals(null,meetingRef);
-        meetinghandlerExtensionTest.SelectAllInvitees();        
+        meetinghandlerExtensionTest.SelectAllInvitees();
         PageReference meetingInviteCl = meetinghandlerExtensionTest.SendEmailInviteClassic();
         Test.stopTest();
         System.assertEquals(meetingInviteCl.getURL(), ApexPages.currentPage().getParameters().get('retURL'));
         List<Zoom_Meeting__c> listOfCreatedZoomMeetings = [SELECT Duration__c FROM Zoom_Meeting__c];
-        System.assertEquals(1, listOfCreatedZoomMeetings.size());  
+        System.assertEquals(1, listOfCreatedZoomMeetings.size());
     }
-    
+
     /******************************************************************************************************************
         Method Name  : testWebinarSaveAutoRegFalse
         Description  : It verifies save operation of the inline VF page for webinar with Auto_Register__c as false.
@@ -147,7 +147,7 @@ public class SFZoom_MeetingHandlerExtension_Test {
         InsertDefaultConfigSetting();
         Zoom_Configuration_Settings__c zoomConfigurationDetailsInserted = Zoom_Configuration_Settings__c.getValues('Zoom Settings');
         System.assertNotEquals(null, zoomConfigurationDetailsInserted);
-        
+
         Contact testContact = new Contact(LastName = 'Test Weebles Contact', Email='Test@test.com');
         INSERT testContact;
         System.assertNotEquals(null, testContact.Id);
@@ -161,13 +161,13 @@ public class SFZoom_MeetingHandlerExtension_Test {
         meetinghandlerExtensionTest.zoomMeeting.Agenda__c = 'Test Meeting Agenda';
         meetinghandlerExtensionTest.zoomMeeting.Start_Date__c = System.today().addDays(12);
         meetinghandlerExtensionTest.meetingStartTime = null;
-        meetinghandlerExtensionTest.eventType='Webinar';        
-        meetinghandlerExtensionTest.CreateWebinar(); 
+        meetinghandlerExtensionTest.eventType='Webinar';
+        meetinghandlerExtensionTest.CreateWebinar();
         ApexPages.Message[] pageMessages = ApexPages.getMessages();
         System.assertNotEquals(0, pageMessages.size());
         meetinghandlerExtensionTest.meetingStartTime = Time.newInstance(18, 30, 2, 20);
         meetinghandlerExtensionTest.zoomMeeting.Duration__c = 1;
-        
+
         pageMessages = ApexPages.getMessages();
         System.assertNotEquals(0, pageMessages.size());
         meetinghandlerExtensionTest.zoomMeeting.Duration__c = 30;
@@ -179,17 +179,17 @@ public class SFZoom_MeetingHandlerExtension_Test {
         meetinghandlerExtensionTest.zoomMeeting.Auto_Register__c = FALSE;
         Test.setMock(HttpCalloutMock.class, new SFZoom_LightningEventHandler_CalloutMock(true,false));
         PageReference meetingRef = meetinghandlerExtensionTest.CreateWebinar();
-        system.assertEquals(null,meetingRef); 
+        system.assertEquals(null,meetingRef);
         for (SFZoom_MeetingHandlerExtension.InviteeDetailsWrapper inviteeDetails : meetinghandlerExtensionTest.listOfNotInvitedRecordDetails) {
-            inviteeDetails.isSelected = false;   
-        }        
+            inviteeDetails.isSelected = false;
+        }
         meetinghandlerExtensionTest.SendEmailInviteClassic();
         System.assertNotEquals(0, ApexPages.getMessages().size());
         meetinghandlerExtensionTest.SelectAllInvitees();
         for (SFZoom_MeetingHandlerExtension.InviteeDetailsWrapper inviteeDetails : meetinghandlerExtensionTest.listOfNotInvitedRecordDetails) {
-            System.assertEquals(true, inviteeDetails.isSelected);            
-        }        
-        meetinghandlerExtensionTest.SelectAllInvitees();        
+            System.assertEquals(true, inviteeDetails.isSelected);
+        }
+        meetinghandlerExtensionTest.SelectAllInvitees();
         PageReference meetinfInviteCl = meetinghandlerExtensionTest.SendEmailInviteClassic();
         Test.stopTest();
         System.assertEquals(meetinfInviteCl.getURL(), ApexPages.currentPage().getParameters().get('retURL'));
@@ -197,8 +197,8 @@ public class SFZoom_MeetingHandlerExtension_Test {
         System.assertEquals(1, listOfCreatedZoomMeetings.size());
         System.assertEquals(30, listOfCreatedZoomMeetings[0].Duration__c);
     }
-    
-    
+
+
     /******************************************************************************************************************
         Method Name  : testMeetingLightningSave
         Description  : It verifies save operation on the lightning  for meeting.
@@ -218,28 +218,28 @@ public class SFZoom_MeetingHandlerExtension_Test {
         Test.startTest();
         ApexPages.currentPage().getParameters().put('retURL','/'+campaignToTest.Id);
         Test.setMock(HttpCalloutMock.class, new SFZoom_LightningEventHandler_CalloutMock(false,false));
-        
+
         SFZoom_MeetingHandlerExtension meetinghandlerExtensionTest = new SFZoom_MeetingHandlerExtension(null,campaignToTest.Id, false);
         meetinghandlerExtensionTest.zoomMeeting.Topic__c = 'Test Meeting Topic';
         meetinghandlerExtensionTest.zoomMeeting.Agenda__c = 'Test Meeting Agenda';
-        meetinghandlerExtensionTest.zoomMeeting.Start_Date__c = System.today().addDays(12);              
-        meetinghandlerExtensionTest.meetingStartTime = Time.newInstance(18, 30, 2, 20);        
-        meetinghandlerExtensionTest.zoomMeeting.Duration__c = 30;        
+        meetinghandlerExtensionTest.zoomMeeting.Start_Date__c = System.today().addDays(12);
+        meetinghandlerExtensionTest.meetingStartTime = Time.newInstance(18, 30, 2, 20);
+        meetinghandlerExtensionTest.zoomMeeting.Duration__c = 30;
         meetinghandlerExtensionTest.zoomMeeting.Join_before_Host__c = false;
         meetinghandlerExtensionTest.zoomMeeting.Start_Participant_Video_on_Meeting_Join__c = true;
         meetinghandlerExtensionTest.zoomMeeting.Enforce_Login__c = true;
         meetinghandlerExtensionTest.eventType= Label.Meeting_Record_Type_Name;
         String createLigMeetig = meetinghandlerExtensionTest.CreateMeetingLightning(false);
-        system.assertEquals(meetinghandlerExtensionTest.zoomMeeting.id, createLigMeetig); 
-        String sendEmailLighting = meetinghandlerExtensionTest.SendEmailInviteLightning(false);       
+        system.assertEquals(meetinghandlerExtensionTest.zoomMeeting.id, createLigMeetig);
+        String sendEmailLighting = meetinghandlerExtensionTest.SendEmailInviteLightning(false);
         Test.stopTest();
-        System.assertEquals(null, sendEmailLighting);      
+        System.assertEquals(null, sendEmailLighting);
         List<Zoom_Meeting__c> listOfCreatedZoomMeetings = [SELECT Duration__c FROM Zoom_Meeting__c];
         System.assertEquals(1, listOfCreatedZoomMeetings.size());
         System.assertEquals(30, listOfCreatedZoomMeetings[0].Duration__c);
     }
-    
-    
+
+
     /******************************************************************************************************************
         Method Name  : testWebinarLightningSave
         Description  : It verifies save operation on the lightning  for webinar.
@@ -259,7 +259,7 @@ public class SFZoom_MeetingHandlerExtension_Test {
         Test.startTest();
         ApexPages.currentPage().getParameters().put('retURL','/'+campaignToTest.Id);
         Test.setMock(HttpCalloutMock.class, new SFZoom_LightningEventHandler_CalloutMock(true,false));
-        
+
         SFZoom_MeetingHandlerExtension meetinghandlerExtensionTest = new SFZoom_MeetingHandlerExtension(null,campaignToTest.Id, false);
         meetinghandlerExtensionTest.zoomMeeting.Topic__c = 'Test Meeting Topic';
         meetinghandlerExtensionTest.zoomMeeting.Agenda__c = 'Test Meeting Agenda';
@@ -270,16 +270,16 @@ public class SFZoom_MeetingHandlerExtension_Test {
         meetinghandlerExtensionTest.zoomMeeting.Start_Participant_Video_on_Meeting_Join__c = true;
         meetinghandlerExtensionTest.zoomMeeting.Enforce_Login__c = true;
         meetinghandlerExtensionTest.eventType= Label.Webinar_Record_Type_Name;
-        String createLigMeeting = meetinghandlerExtensionTest.CreateMeetingLightning(true);        
+        String createLigMeeting = meetinghandlerExtensionTest.CreateMeetingLightning(true);
         System.assertEquals(meetinghandlerExtensionTest.zoomMeeting.id, createLigMeeting);
-        String sendEmailLighting = meetinghandlerExtensionTest.SendEmailInviteLightning(false);        
+        String sendEmailLighting = meetinghandlerExtensionTest.SendEmailInviteLightning(false);
         Test.stopTest();
-        System.assertEquals(null, sendEmailLighting);        
+        System.assertEquals(null, sendEmailLighting);
         List<Zoom_Meeting__c> listOfCreatedZoomMeetings = [SELECT Duration__c FROM Zoom_Meeting__c];
         System.assertEquals(1, listOfCreatedZoomMeetings.size());
-        System.assertEquals(30, listOfCreatedZoomMeetings[0].Duration__c); 
+        System.assertEquals(30, listOfCreatedZoomMeetings[0].Duration__c);
     }
-    
+
      /******************************************************************************************************************
         Method Name  : testMeetingLightningUpdate
         Description  : It verifies update operation on the lightning  for meeting.
@@ -301,14 +301,14 @@ public class SFZoom_MeetingHandlerExtension_Test {
         Event eventCreated = CreateEvent(testMeeting.Id, testLead.id, null);
         System.assertNotEquals(null, eventCreated.Id);
         Test.startTest();
-        ApexPages.currentPage().getParameters().put('retURL','/'+campaignToTest.Id);        
-        
+        ApexPages.currentPage().getParameters().put('retURL','/'+campaignToTest.Id);
+
         SFZoom_MeetingHandlerExtension meetinghandlerExtensionTest = new SFZoom_MeetingHandlerExtension(testMeeting.Id,campaignToTest.Id, false);
         meetinghandlerExtensionTest.zoomMeeting.Topic__c = 'Test Meeting Topic';
         meetinghandlerExtensionTest.zoomMeeting.Agenda__c = 'Test Meeting Agenda';
         meetinghandlerExtensionTest.zoomMeeting.Start_Date__c = System.today().addDays(12);
-        meetinghandlerExtensionTest.meetingStartTime = Time.newInstance(18, 30, 2, 20);        
-        meetinghandlerExtensionTest.zoomMeeting.Duration__c = 15; 
+        meetinghandlerExtensionTest.meetingStartTime = Time.newInstance(18, 30, 2, 20);
+        meetinghandlerExtensionTest.zoomMeeting.Duration__c = 15;
         meetinghandlerExtensionTest.zoomMeeting.Join_before_Host__c = false;
         meetinghandlerExtensionTest.zoomMeeting.Start_Participant_Video_on_Meeting_Join__c = true;
         meetinghandlerExtensionTest.zoomMeeting.Enforce_Login__c = true;
@@ -318,12 +318,12 @@ public class SFZoom_MeetingHandlerExtension_Test {
         System.assertEquals(testMeeting.Id, updateMeetingLig);
         String sendEmailLighting = meetinghandlerExtensionTest.SendEmailInviteLightning(true);
         Test.stopTest();
-        System.assertEquals(null, sendEmailLighting);   
+        System.assertEquals(null, sendEmailLighting);
         List<Zoom_Meeting__c> listOfCreatedZoomMeetings = [SELECT Duration__c FROM Zoom_Meeting__c];
-        System.assertEquals(1, listOfCreatedZoomMeetings.size());        
+        System.assertEquals(1, listOfCreatedZoomMeetings.size());
         System.assertEquals(15, listOfCreatedZoomMeetings[0].Duration__c);
     }
-    
+
     /******************************************************************************************************************
         Method Name  : testWebinarLightningUpdate
         Description  : It verifies update operation on the lightning  for webinar.
@@ -347,13 +347,13 @@ public class SFZoom_MeetingHandlerExtension_Test {
         Test.startTest();
         ApexPages.currentPage().getParameters().put('retURL','/'+campaignToTest.Id);
         Test.setMock(HttpCalloutMock.class, new SFZoom_LightningEventHandler_CalloutMock(true,false));
-        
+
         SFZoom_MeetingHandlerExtension meetinghandlerExtensionTest = new SFZoom_MeetingHandlerExtension(testMeeting.Id,campaignToTest.Id, false);
         meetinghandlerExtensionTest.zoomMeeting.Topic__c = 'Test Meeting Topic';
         meetinghandlerExtensionTest.zoomMeeting.Agenda__c = 'Test Meeting Agenda';
         meetinghandlerExtensionTest.zoomMeeting.Start_Date__c = System.today().addDays(12);
-        meetinghandlerExtensionTest.meetingStartTime = Time.newInstance(18, 30, 2, 20);        
-        meetinghandlerExtensionTest.zoomMeeting.Duration__c = 15;        
+        meetinghandlerExtensionTest.meetingStartTime = Time.newInstance(18, 30, 2, 20);
+        meetinghandlerExtensionTest.zoomMeeting.Duration__c = 15;
         meetinghandlerExtensionTest.zoomMeeting.Join_before_Host__c = false;
         meetinghandlerExtensionTest.zoomMeeting.Start_Participant_Video_on_Meeting_Join__c = true;
         meetinghandlerExtensionTest.zoomMeeting.Enforce_Login__c = true;
@@ -364,12 +364,12 @@ public class SFZoom_MeetingHandlerExtension_Test {
         System.assertEquals(null, sendEmailLighting);
         meetinghandlerExtensionTest.UpdateMeetingDetailsLightning();
         Test.stopTest();
-        System.assertNotEquals(null, meetinghandlerExtensionTest); 
+        System.assertNotEquals(null, meetinghandlerExtensionTest);
         List<Zoom_Meeting__c> listOfCreatedZoomMeetings = [SELECT Duration__c FROM Zoom_Meeting__c];
         System.assertEquals(1, listOfCreatedZoomMeetings.size());
         System.assertEquals(15, listOfCreatedZoomMeetings[0].Duration__c);
     }
-    
+
     /******************************************************************************************************************
         Method Name  : testMeetingClassicUpdate
         Description  : It verifies update operation on the classic  for meeting.
@@ -378,7 +378,7 @@ public class SFZoom_MeetingHandlerExtension_Test {
     *******************************************************************************************************************/
     @isTest
     static void testMeetingClassicUpdate(){
-        InsertDefaultConfigSetting(); 
+        InsertDefaultConfigSetting();
         Zoom_Configuration_Settings__c zoomConfigurationDetailsInserted = Zoom_Configuration_Settings__c.getValues('Zoom Settings');
         System.assertNotEquals(null, zoomConfigurationDetailsInserted);
         Contact testLead = new Contact(FirstName = 'Test', LastName = 'Weebles Lead Test',  Email='testlead@mailinator.com');
@@ -386,31 +386,31 @@ public class SFZoom_MeetingHandlerExtension_Test {
         System.assertNotEquals(null, testLead.Id);
         Campaign campaignToTest = InsertCampaignWithCampaignMembersOfContact(testLead.Id);
         System.assertNotEquals(null, campaignToTest.Id);
-        Zoom_Meeting__c testMeeting = createZoomMeeting();        
+        Zoom_Meeting__c testMeeting = createZoomMeeting();
         System.assertNotEquals(null, testMeeting.Id);
         testMeeting.Campaign__c = campaignToTest.Id;
         UPDATE testMeeting;
-        Test.startTest(); 
+        Test.startTest();
         ApexPages.currentPage().getParameters().put('retURL','/'+campaignToTest.Id);
         Test.setMock(HttpCalloutMock.class, new SFZoom_LightningEventHandler_CalloutMock(false,false));
         SFZoom_MeetingHandlerExtension meetinghandlerExtensionTest = new SFZoom_MeetingHandlerExtension(
-                                                                    new ApexPages.StandardController(new Zoom_Meeting__c(Id=testMeeting.Id, 
-                                                                    Campaign__c = testMeeting.Campaign__c, 
+                                                                    new ApexPages.StandardController(new Zoom_Meeting__c(Id=testMeeting.Id,
+                                                                    Campaign__c = testMeeting.Campaign__c,
                                                                     RecordTypeId = testMeeting.RecordTypeId)));
-        
+
         meetinghandlerExtensionTest.zoomMeeting.Topic__c = 'Test Meeting Topic';
         meetinghandlerExtensionTest.zoomMeeting.Agenda__c = 'Test Meeting Agenda';
         meetinghandlerExtensionTest.zoomMeeting.Start_Date__c = System.today().addDays(-12);
         meetinghandlerExtensionTest.meetingStartTime = Time.newInstance(18, 30, 2, 20);
-        meetinghandlerExtensionTest.eventType=Label.Meeting_Record_Type_Name;        
+        meetinghandlerExtensionTest.eventType=Label.Meeting_Record_Type_Name;
         meetinghandlerExtensionTest.UpdateMeetingDetailsClassic();
-        
-        ApexPages.Message[] pageMessages = ApexPages.getMessages(); 
+
+        ApexPages.Message[] pageMessages = ApexPages.getMessages();
         System.assertNotEquals(0, pageMessages.size());
-        
+
         meetinghandlerExtensionTest.meetingStartTime = Time.newInstance(18, 30, 2, 20);
         meetinghandlerExtensionTest.zoomMeeting.Duration__c = 15;
-        
+
         pageMessages = ApexPages.getMessages();
         System.assertNotEquals(0, pageMessages.size());
         meetinghandlerExtensionTest.zoomMeeting.Start_Date__c = System.today().addDays(12);
@@ -419,30 +419,30 @@ public class SFZoom_MeetingHandlerExtension_Test {
         meetinghandlerExtensionTest.zoomMeeting.Enforce_Login__c = true;
         meetinghandlerExtensionTest.zoomMeeting.Auto_Register__c = false;
         meetinghandlerExtensionTest.eventType= Label.Meeting_Record_Type_Name;
-        PageReference updateMeetingRef = meetinghandlerExtensionTest.UpdateMeetingDetailsClassic();              
+        PageReference updateMeetingRef = meetinghandlerExtensionTest.UpdateMeetingDetailsClassic();
         System.assertEquals(updateMeetingRef.getURL(), ApexPages.currentPage().getParameters().get('retURL'));
-        
+
         for (SFZoom_MeetingHandlerExtension.InviteeDetailsWrapper inviteeDetails : meetinghandlerExtensionTest.listOfNotInvitedRecordDetails) {
-            inviteeDetails.isSelected = false;   
+            inviteeDetails.isSelected = false;
         }
         meetinghandlerExtensionTest.SendEmailInviteClassic();
         System.assertNotEquals(0, ApexPages.getMessages().size());
         meetinghandlerExtensionTest.SelectAllInvitees();
         for (SFZoom_MeetingHandlerExtension.InviteeDetailsWrapper inviteeDetails : meetinghandlerExtensionTest.listOfNotInvitedRecordDetails) {
-            System.assertEquals(true, inviteeDetails.isSelected);            
+            System.assertEquals(true, inviteeDetails.isSelected);
         }
         PageReference sendMailRef = meetinghandlerExtensionTest.SendEmailInviteClassic();
-        Test.stopTest();        
+        Test.stopTest();
         System.assertEquals(sendMailRef.getURL(), ApexPages.currentPage().getParameters().get('retURL'));
         List<Zoom_Meeting__c> listOfCreatedZoomMeetings = [SELECT Duration__c FROM Zoom_Meeting__c];
         System.assertEquals(1, listOfCreatedZoomMeetings.size());
         System.assertEquals(15, listOfCreatedZoomMeetings[0].Duration__c);
     }
-    
+
     /******************************************************************************************************************
         Method Name  : testSendThankYouEmailNotification
         Description  : It inserts default custom setting for the zoom account configuration
-        Date         : 20 Mar 2019.
+        Date         : 30 Sept. 2024.
         Author       : DataColada Pty Ltd
     *******************************************************************************************************************/
     @isTest
@@ -455,28 +455,28 @@ public class SFZoom_MeetingHandlerExtension_Test {
         Zoom_Meeting__c testMeeting = createZoomWebinar();
         System.assertNotEquals(null, testMeeting.Id);
         testMeeting.Campaign__c = campaignToTest.Id;
-        UPDATE testMeeting;        
-        
+        UPDATE testMeeting;
+
         ApexPages.currentPage().getParameters().put('retURL','/'+campaignToTest.Id);
         Test.setMock(HttpCalloutMock.class, new SFZoom_LightningEventHandler_CalloutMock(true,false));
         SFZoom_MeetingHandlerExtension meetinghandlerExtensionTest = new SFZoom_MeetingHandlerExtension(
-            new ApexPages.StandardController(new Zoom_Meeting__c(Id=testMeeting.Id, 
-                                                                         Campaign__c = testMeeting.Campaign__c, 
+            new ApexPages.StandardController(new Zoom_Meeting__c(Id=testMeeting.Id,
+                                                                         Campaign__c = testMeeting.Campaign__c,
                                                                          RecordTypeId = testMeeting.RecordTypeId)));
-        ApexPages.Message[] pageMessages = ApexPages.getMessages(); 
+        ApexPages.Message[] pageMessages = ApexPages.getMessages();
         System.assertNotEquals(0, pageMessages.size());
-        
+
         InsertDefaultConfigSetting();
         Test.startTest();
         Zoom_Configuration_Settings__c zoomConfigurationDetailsInserted = Zoom_Configuration_Settings__c.getValues('Zoom Settings');
         System.assertNotEquals(null, zoomConfigurationDetailsInserted);
         meetinghandlerExtensionTest = new SFZoom_MeetingHandlerExtension(
-            new ApexPages.StandardController(new Zoom_Meeting__c(Id=testMeeting.Id, 
-                                                                         Campaign__c = testMeeting.Campaign__c, 
+            new ApexPages.StandardController(new Zoom_Meeting__c(Id=testMeeting.Id,
+                                                                         Campaign__c = testMeeting.Campaign__c,
                                                                          RecordTypeId = testMeeting.RecordTypeId)));
         meetinghandlerExtensionTest.SelectAllInvitees();
         for (SFZoom_MeetingHandlerExtension.InviteeDetailsWrapper inviteeDetails : meetinghandlerExtensionTest.listOfNotInvitedRecordDetails) {
-            System.assertEquals(true, inviteeDetails.isSelected);            
+            System.assertEquals(true, inviteeDetails.isSelected);
         }
         PageReference sendMailRef = meetinghandlerExtensionTest.SendEmailInviteClassic();
         meetinghandlerExtensionTest.SendEmailInviteClassic();
@@ -486,10 +486,10 @@ public class SFZoom_MeetingHandlerExtension_Test {
         }
         UPDATE lisOfEvents;
         meetinghandlerExtensionTest = new SFZoom_MeetingHandlerExtension(
-            new ApexPages.StandardController(new Zoom_Meeting__c(Id=testMeeting.Id, 
-                                                                         Campaign__c = testMeeting.Campaign__c, 
+            new ApexPages.StandardController(new Zoom_Meeting__c(Id=testMeeting.Id,
+                                                                         Campaign__c = testMeeting.Campaign__c,
                                                                          RecordTypeId = testMeeting.RecordTypeId)));
-        
+
         meetinghandlerExtensionTest.zoomMeeting.Thank_you_notification__c = false;
         PageReference sendThankYouEmailPageRef = meetinghandlerExtensionTest.sendThankYouEmail();
         System.assertNotEquals(0, ApexPages.getMessages().size());
@@ -498,17 +498,17 @@ public class SFZoom_MeetingHandlerExtension_Test {
         meetinghandlerExtensionTest.zoomMeeting.Survey_Link_URL__c = 'https://testsurverylink.com';
         meetinghandlerExtensionTest.zoomMeeting.Share_Recording_URL__c = true;
         UPDATE meetinghandlerExtensionTest.zoomMeeting;
-        meetinghandlerExtensionTest.isFromLightning = true;        
-        
+        meetinghandlerExtensionTest.isFromLightning = true;
+
         sendThankYouEmailPageRef = meetinghandlerExtensionTest.sendThankYouEmail();
         Test.stopTest();
-        System.assertNotEquals(null, sendThankYouEmailPageRef);        
+        System.assertNotEquals(null, sendThankYouEmailPageRef);
     }
-    
+
     /******************************************************************************************************************
         Method Name  : testResetThankYouSettings
         Description  : It inserts default custom setting for the zoom account configuration
-        Date         : 20 Mar 2019.
+        Date         : 01 Mar 2024.
         Author       : DataColada Pty Ltd
     *******************************************************************************************************************/
     @isTest
@@ -521,24 +521,24 @@ public class SFZoom_MeetingHandlerExtension_Test {
         Zoom_Meeting__c testMeeting = createZoomWebinar();
         System.assertNotEquals(null, testMeeting.Id);
         testMeeting.Campaign__c = campaignToTest.Id;
-        UPDATE testMeeting;        
-        
+        UPDATE testMeeting;
+
         ApexPages.currentPage().getParameters().put('retURL','/'+campaignToTest.Id);
         Test.setMock(HttpCalloutMock.class, new SFZoom_LightningEventHandler_CalloutMock(true,false));
         SFZoom_MeetingHandlerExtension meetinghandlerExtensionTest = new SFZoom_MeetingHandlerExtension(
-                                                            new ApexPages.StandardController(new Zoom_Meeting__c(Id=testMeeting.Id, 
-                                                                         Campaign__c = testMeeting.Campaign__c, 
+                                                            new ApexPages.StandardController(new Zoom_Meeting__c(Id=testMeeting.Id,
+                                                                         Campaign__c = testMeeting.Campaign__c,
                                                                          RecordTypeId = testMeeting.RecordTypeId)));
-        ApexPages.Message[] pageMessages = ApexPages.getMessages(); 
+        ApexPages.Message[] pageMessages = ApexPages.getMessages();
         System.assertNotEquals(0, pageMessages.size());
-        
+
         InsertDefaultConfigSetting();
         Test.startTest();
         Zoom_Configuration_Settings__c zoomConfigurationDetailsInserted = Zoom_Configuration_Settings__c.getValues('Zoom Settings');
         System.assertNotEquals(null, zoomConfigurationDetailsInserted);
         meetinghandlerExtensionTest = new SFZoom_MeetingHandlerExtension(
-            new ApexPages.StandardController(new Zoom_Meeting__c(Id=testMeeting.Id, 
-                                                                         Campaign__c = testMeeting.Campaign__c, 
+            new ApexPages.StandardController(new Zoom_Meeting__c(Id=testMeeting.Id,
+                                                                         Campaign__c = testMeeting.Campaign__c,
                                                                          RecordTypeId = testMeeting.RecordTypeId)));
         meetinghandlerExtensionTest.zoomMeeting.Thank_you_notification__c = true;
         meetinghandlerExtensionTest.zoomMeeting.Share_Survey_Link__c = true;
@@ -547,9 +547,9 @@ public class SFZoom_MeetingHandlerExtension_Test {
         meetinghandlerExtensionTest.resetThankYouSetting();
         Test.stopTest();
         System.assertEquals(false, meetinghandlerExtensionTest.zoomMeeting.Share_Survey_Link__c);
-        System.assertEquals(false, meetinghandlerExtensionTest.zoomMeeting.Share_Recording_URL__c);        
+        System.assertEquals(false, meetinghandlerExtensionTest.zoomMeeting.Share_Recording_URL__c);
     }
-    
+
     /******************************************************************************************************************
         Method Name  : testWebinarClassicUpdate
         Description  : It verifies update operation on the classic  for meeting.
@@ -557,7 +557,7 @@ public class SFZoom_MeetingHandlerExtension_Test {
         Author       : DataColada Pty Ltd
     *******************************************************************************************************************/
     @isTest
-    static void testWebinarClassicUpdate(){        
+    static void testWebinarClassicUpdate(){
         Contact testLead = new Contact(FirstName = 'Test', LastName = 'Weebles Lead Test',  Email='testlead@mailinator.com');
         INSERT testLead;
         System.assertNotEquals(null, testLead.Id);
@@ -566,24 +566,24 @@ public class SFZoom_MeetingHandlerExtension_Test {
         Zoom_Meeting__c testMeeting = createZoomWebinar();
         System.assertNotEquals(null, testMeeting.Id);
         testMeeting.Campaign__c = campaignToTest.Id;
-        UPDATE testMeeting;        
-        
+        UPDATE testMeeting;
+
         ApexPages.currentPage().getParameters().put('retURL','/'+campaignToTest.Id);
         Test.setMock(HttpCalloutMock.class, new SFZoom_LightningEventHandler_CalloutMock(true,false));
         SFZoom_MeetingHandlerExtension meetinghandlerExtensionTest = new SFZoom_MeetingHandlerExtension(
-                                                            new ApexPages.StandardController(new Zoom_Meeting__c(Id=testMeeting.Id, 
-                                                                         Campaign__c = testMeeting.Campaign__c, 
+                                                            new ApexPages.StandardController(new Zoom_Meeting__c(Id=testMeeting.Id,
+                                                                         Campaign__c = testMeeting.Campaign__c,
                                                                          RecordTypeId = testMeeting.RecordTypeId)));
-        ApexPages.Message[] pageMessages = ApexPages.getMessages(); 
+        ApexPages.Message[] pageMessages = ApexPages.getMessages();
         System.assertNotEquals(0, pageMessages.size());
-        
+
         InsertDefaultConfigSetting();
         Test.startTest();
         Zoom_Configuration_Settings__c zoomConfigurationDetailsInserted = Zoom_Configuration_Settings__c.getValues('Zoom Settings');
         System.assertNotEquals(null, zoomConfigurationDetailsInserted);
         meetinghandlerExtensionTest = new SFZoom_MeetingHandlerExtension(
-                                                            new ApexPages.StandardController(new Zoom_Meeting__c(Id=testMeeting.Id, 
-                                                              Campaign__c = testMeeting.Campaign__c, 
+                                                            new ApexPages.StandardController(new Zoom_Meeting__c(Id=testMeeting.Id,
+                                                              Campaign__c = testMeeting.Campaign__c,
                                                               RecordTypeId = testMeeting.RecordTypeId)));
         meetinghandlerExtensionTest.zoomMeeting.Topic__c = 'Test Meeting Topic';
         meetinghandlerExtensionTest.zoomMeeting.Agenda__c = 'Test Meeting Agenda';
@@ -591,17 +591,17 @@ public class SFZoom_MeetingHandlerExtension_Test {
         meetinghandlerExtensionTest.meetingStartTime = null;
         meetinghandlerExtensionTest.UpdateWebinarDetailsClassic();
         pageMessages = ApexPages.getMessages();
-        System.assertNotEquals(0, pageMessages.size()); 
+        System.assertNotEquals(0, pageMessages.size());
         meetinghandlerExtensionTest.meetingStartTime = Time.newInstance(18, 30, 2, 20);
-        
+
         pageMessages = ApexPages.getMessages();
         System.assertNotEquals(0, pageMessages.size());
-        
+
         meetinghandlerExtensionTest.zoomMeeting.Duration__c = 15;
         meetinghandlerExtensionTest.zoomMeeting.Join_before_Host__c = false;
         meetinghandlerExtensionTest.zoomMeeting.Start_Participant_Video_on_Meeting_Join__c = true;
         meetinghandlerExtensionTest.zoomMeeting.Enforce_Login__c = true;
-        meetinghandlerExtensionTest.eventType= Label.Webinar_Record_Type_Name;  
+        meetinghandlerExtensionTest.eventType= Label.Webinar_Record_Type_Name;
         PageReference updateWebinarRef = meetinghandlerExtensionTest.UpdateWebinarDetailsClassic();
         Test.stopTest();
         System.assertEquals(updateWebinarRef.getURL(), ApexPages.currentPage().getParameters().get('retURL'));
@@ -609,12 +609,12 @@ public class SFZoom_MeetingHandlerExtension_Test {
         System.assertEquals(1, listOfCreatedZoomMeetings.size());
         System.assertEquals(15, listOfCreatedZoomMeetings[0].Duration__c);
     }
-    
- 
+
+
     /******************************************************************************************************************
         Method Name  : testMeetingVerifyDelete
         Description  : It verifies Delete operation of the inline VF page for meeting.
-        Date         : 07 Jan 2019.
+        Date         : 30 Sept. 2024.
         Author       : DataColada Pty Ltd
     *******************************************************************************************************************/
     @isTest
@@ -629,22 +629,22 @@ public class SFZoom_MeetingHandlerExtension_Test {
         System.assertNotEquals(null, campaignToTest.Id);
         Zoom_Meeting__c testMeeting = createZoomMeeting();
         System.assertNotEquals(null, testMeeting.Id);
-        
+
         Test.startTest();
         Test.setMock(HttpCalloutMock.class, new SFZoom_LightningEventHandler_CalloutMock(false,false));
         ApexPages.currentPage().getParameters().put('retURL','/'+campaignToTest.Id);
         ApexPages.currentPage().getParameters().put('delID',testMeeting.Id);
         SFZoom_MeetingHandlerExtension meetinghandlerExtensionTest = new SFZoom_MeetingHandlerExtension(
-            new ApexPages.StandardController(new Zoom_Meeting__c(Id=testMeeting.Id, 
-                                                                         Campaign__c = testMeeting.Campaign__c, 
+            new ApexPages.StandardController(new Zoom_Meeting__c(Id=testMeeting.Id,
+                                                                         Campaign__c = testMeeting.Campaign__c,
                                                                          RecordTypeId = testMeeting.RecordTypeId)));
         PageReference verifyDelPageReference = meetinghandlerExtensionTest.VerifyDeleteOperation();
         Test.stopTest();
         System.assertEquals(verifyDelPageReference.getUrl(), ApexPages.currentPage().getParameters().get('retURL'));
         List<Zoom_Meeting__c> listOfCreatedZoomMeetings = [SELECT Duration__c FROM Zoom_Meeting__c];
-        System.assertEquals(0, listOfCreatedZoomMeetings.size());        
+        System.assertEquals(0, listOfCreatedZoomMeetings.size());
     }
-    
+
     /******************************************************************************************************************
         Method Name  : testWebinarVerifyDelete
         Description  : It verifies Delete operation of the inline VF page for Webinar.
@@ -663,22 +663,22 @@ public class SFZoom_MeetingHandlerExtension_Test {
         System.assertNotEquals(null, campaignToTest.Id);
         Zoom_Meeting__c testWebinar = createZoomWebinar();
         System.assertNotEquals(null, testWebinar.Id);
-        
+
         Test.startTest();
         Test.setMock(HttpCalloutMock.class, new SFZoom_LightningEventHandler_CalloutMock(true,false));
         ApexPages.currentPage().getParameters().put('retURL','/'+campaignToTest.Id);
         ApexPages.currentPage().getParameters().put('delID',testWebinar.Id);
         SFZoom_MeetingHandlerExtension meetinghandlerExtensionTest = new SFZoom_MeetingHandlerExtension(
-            new ApexPages.StandardController(new Zoom_Meeting__c(Id=testWebinar.Id, 
-                                                                         Campaign__c = testWebinar.Campaign__c, 
-                                                                         RecordTypeId = testWebinar.RecordTypeId)));        
+            new ApexPages.StandardController(new Zoom_Meeting__c(Id=testWebinar.Id,
+                                                                         Campaign__c = testWebinar.Campaign__c,
+                                                                         RecordTypeId = testWebinar.RecordTypeId)));
         PageReference verifyDelPageReference = meetinghandlerExtensionTest.VerifyDeleteOperation();
         Test.stopTest();
         System.assertEquals(verifyDelPageReference.getUrl(), ApexPages.currentPage().getParameters().get('retURL'));
         List<Zoom_Meeting__c> listOfCreatedZoomMeetings = [SELECT Duration__c FROM Zoom_Meeting__c];
-        System.assertEquals(0, listOfCreatedZoomMeetings.size());        
+        System.assertEquals(0, listOfCreatedZoomMeetings.size());
     }
-    
+
     /******************************************************************************************************************
         Method Name  : testMeetingSaveWithAutoRegister
         Description  : It verifies save operation of the inline VF page with auto register option checked.
@@ -702,9 +702,9 @@ public class SFZoom_MeetingHandlerExtension_Test {
         meetinghandlerExtensionTest.zoomMeeting.Topic__c = 'Test Meeting Topic';
         meetinghandlerExtensionTest.zoomMeeting.Agenda__c = 'Test Meeting Agenda';
         meetinghandlerExtensionTest.zoomMeeting.Start_Date__c = System.today().addDays(-1);
-        meetinghandlerExtensionTest.meetingStartTime = null;        
-        meetinghandlerExtensionTest.zoomMeeting.Duration__c = 1;       
-        
+        meetinghandlerExtensionTest.meetingStartTime = null;
+        meetinghandlerExtensionTest.zoomMeeting.Duration__c = 1;
+
         meetinghandlerExtensionTest.CreateMeetingClassic();
         ApexPages.Message[] pageMessages = ApexPages.getMessages();
         System.assertNotEquals(0, pageMessages.size());
@@ -716,27 +716,27 @@ public class SFZoom_MeetingHandlerExtension_Test {
         meetinghandlerExtensionTest.zoomMeeting.Auto_Register__c = true;
         meetinghandlerExtensionTest.zoomMeeting.Start_Date__c = System.today().addDays(6);
         meetinghandlerExtensionTest.eventType= Label.Meeting_Record_Type_Name;
-             
+
         PageReference createdMeetingRef = meetinghandlerExtensionTest.CreateMeetingClassic();
-        List<Zoom_Meeting__c> listOfCreatedZoomMeetings = [SELECT Name FROM Zoom_Meeting__c];             
+        List<Zoom_Meeting__c> listOfCreatedZoomMeetings = [SELECT Name FROM Zoom_Meeting__c];
         System.assertEquals(1, listOfCreatedZoomMeetings.size());
 
         for (SFZoom_MeetingHandlerExtension.InviteeDetailsWrapper inviteeDetails : meetinghandlerExtensionTest.listOfNotInvitedRecordDetails) {
-            inviteeDetails.isSelected = false;   
+            inviteeDetails.isSelected = false;
         }
         meetinghandlerExtensionTest.SendEmailInviteClassic();
         System.assertNotEquals(0, ApexPages.getMessages().size());
         meetinghandlerExtensionTest.SelectAllInvitees();
         for (SFZoom_MeetingHandlerExtension.InviteeDetailsWrapper inviteeDetails : meetinghandlerExtensionTest.listOfNotInvitedRecordDetails) {
-            System.assertEquals(true, inviteeDetails.isSelected);   
+            System.assertEquals(true, inviteeDetails.isSelected);
         }
         PageReference pageToRedirect = meetinghandlerExtensionTest.SendEmailInviteClassic();
         Test.stopTest();
         System.assertEquals(ApexPages.currentPage().getParameters().get('retURL'), pageToRedirect.getUrl());
     }
-    
-    
-    
+
+
+
     /******************************************************************************************************************
         Method Name  : testExistingMeetingUpdateAndCancel
         Description  : It verifies update and cancel operation of the inline VF page.
@@ -761,11 +761,11 @@ public class SFZoom_MeetingHandlerExtension_Test {
         System.assertNotEquals(null, eventCreated.Id);
         Test.setMock(HttpCalloutMock.class, new SFZoom_LightningEventHandler_CalloutMock(false,false));
         SFZoom_MeetingHandlerExtension meetinghandlerExtensionTest = new SFZoom_MeetingHandlerExtension(
-            new ApexPages.StandardController(new Zoom_Meeting__c(Id=testMeeting.Id, 
-                                                                         Campaign__c = testMeeting.Campaign__c, 
-                                                                         RecordTypeId = testMeeting.RecordTypeId)));  
+            new ApexPages.StandardController(new Zoom_Meeting__c(Id=testMeeting.Id,
+                                                                         Campaign__c = testMeeting.Campaign__c,
+                                                                         RecordTypeId = testMeeting.RecordTypeId)));
         ApexPages.Message[] pageMessages = ApexPages.getMessages();
-       
+
         meetinghandlerExtensionTest.eventType= Label.Meeting_Record_Type_Name;
         pageMessages = ApexPages.getMessages();
         System.assertEquals(0, pageMessages.size());
@@ -773,18 +773,18 @@ public class SFZoom_MeetingHandlerExtension_Test {
         meetinghandlerExtensionTest.zoomMeeting.Duration__c = 60;
         ApexPages.currentPage().getParameters().put('meetingIdSF','/'+testMeeting.Id);
         ApexPages.currentPage().getParameters().put('delID',testMeeting.Id);
-        
+
         List<Zoom_Meeting__c> listOfUpdatedZoomMeetings = [SELECT Duration__c FROM Zoom_Meeting__c];
         System.assertNotEquals(null, listOfUpdatedZoomMeetings);
-        
+
         System.assertEquals(true, meetinghandlerExtensionTest.isEditEnabled);
         PageReference cancelOpPageReference = meetinghandlerExtensionTest.CancelOperation();
         Test.stopTest();
         System.assertEquals(cancelOpPageReference.getURL(), ApexPages.currentPage().getParameters().get('meetingIdSF'));
         List<Zoom_Meeting__c> listOfZoomMeetings = [SELECT Name FROM Zoom_Meeting__c];
-        System.assertEquals(1, listOfZoomMeetings.size());         
-    } 
-    
+        System.assertEquals(1, listOfZoomMeetings.size());
+    }
+
     /******************************************************************************************************************
         Method Name  : createZoomMeeting
         Description  : It creates test zoom meeting record.
@@ -793,7 +793,7 @@ public class SFZoom_MeetingHandlerExtension_Test {
     *******************************************************************************************************************/
     public static Zoom_Meeting__c createZoomMeeting(){
         Zoom_Meeting__c zoomMeeting = new Zoom_Meeting__c();
-        List<RecordType> listOfRecordTypes = [SELECT Name FROM RecordType WHERE sObjectType = 'Zoom_Meeting__c' 
+        List<RecordType> listOfRecordTypes = [SELECT Name FROM RecordType WHERE sObjectType = 'Zoom_Meeting__c'
                             AND DeveloperName = :Label.Meeting_Record_Type_Name LIMIT 1];
         zoomMeeting.Name = '661257541';
         zoomMeeting.Agenda__c = 'Test Meeting Agenda';
@@ -806,7 +806,7 @@ public class SFZoom_MeetingHandlerExtension_Test {
         zoomMeeting.Enforce_Login__c = true;
         if(!listOfRecordTypes.isEmpty()){
             zoomMeeting.RecordTypeId =  listOfRecordTypes[0].Id;
-        }        
+        }
         INSERT zoomMeeting;
         System.assertNotEquals(null, zoomMeeting.Id);
         return zoomMeeting;
@@ -820,7 +820,7 @@ public class SFZoom_MeetingHandlerExtension_Test {
     *******************************************************************************************************************/
     public static Zoom_Meeting__c createZoomWebinar(){
         Zoom_Meeting__c zoomWebinar = new Zoom_Meeting__c();
-        List<RecordType> listOfRecordTypes = [SELECT Name FROM RecordType WHERE sObjectType = 'Zoom_Meeting__c' 
+        List<RecordType> listOfRecordTypes = [SELECT Name FROM RecordType WHERE sObjectType = 'Zoom_Meeting__c'
                             AND DeveloperName = :Label.Webinar_Record_Type_Name LIMIT 1];
         zoomWebinar.Name = '661257541';
         zoomWebinar.Agenda__c = 'Test Meeting Agenda';
@@ -834,12 +834,12 @@ public class SFZoom_MeetingHandlerExtension_Test {
         zoomWebinar.Panelist_Video__c = true;
         if(!listOfRecordTypes.isEmpty()){
             zoomWebinar.RecordTypeId =  listOfRecordTypes[0].Id;
-        }        
+        }
         INSERT zoomWebinar;
         System.assertNotEquals(null, zoomWebinar.Id);
         return zoomWebinar;
     }
-    
+
     /******************************************************************************************************************
         Method Name  : CreateEvent
         Description  : It creates test record for event.
@@ -860,7 +860,7 @@ public class SFZoom_MeetingHandlerExtension_Test {
         system.assertNotEquals(null,eventToTest);
         return eventToTest;
     }
-    
+
     /******************************************************************************************************************
         Method Name  : InsertCampaignWithCampaignMembers
         Description  : It creates test record for lead, campaign and campaign member.
@@ -878,7 +878,7 @@ public class SFZoom_MeetingHandlerExtension_Test {
         System.assertNotEquals(null, listOfCmpMembers[0].Id);
         return testCampaign;
     }
-    
+
     /******************************************************************************************************************
         Method Name  : InsertCampaignWithCampaignMembersOfContact
         Description  : It creates test record for contact, campaign and campaign member.
@@ -896,7 +896,7 @@ public class SFZoom_MeetingHandlerExtension_Test {
         System.assertNotEquals(null, listOfCmpMembers[0].Id);
         return testCampaign;
     }
-    
+
     /******************************************************************************************************************
         Method Name  : InsertDefaultConfigSetting
         Description  : It inserts default custom setting for the zoom account configuration
@@ -915,13 +915,27 @@ public class SFZoom_MeetingHandlerExtension_Test {
         zoomConfigurationDetails.Zoom_Account_User_Id__c = 'Qi79NR8_TXrqVJ2sK3uiyt';
         zoomConfigurationDetails.Enforce_Login__c = true;
         zoomConfigurationDetails.Join_Before_Host__c = true;
-        zoomConfigurationDetails.Start_Participant_Video_on_Join__c = true;  
-        zoomConfigurationDetails.Send_Thank_you_email_notification__c = true;    
-        zoomConfigurationDetails.Share_Recording_URL__c = true;    
-        zoomConfigurationDetails.Share_Survey_Link__c = true;    
-        
+        zoomConfigurationDetails.Start_Participant_Video_on_Join__c = true;
+        zoomConfigurationDetails.Send_Thank_you_email_notification__c = true;
+        zoomConfigurationDetails.Share_Recording_URL__c = true;
+        zoomConfigurationDetails.Share_Survey_Link__c = true;
+
         INSERT zoomConfigurationDetails;
         system.assertNotEquals(null, zoomConfigurationDetails);
     }
-    
+
+
+        public static Map<string,string> getMapChildandWho(List<SObject> lstChildRecords,Zoom_Metadata__mdt currentzoomSetting)
+    {
+        Map<string, string> mapChildIdAndWho = new Map<string, string>();
+        if(lstChildRecords != null && !lstChildRecords.isEmpty())
+        {
+            for(sobject sobj : lstChildRecords)
+            {
+                mapChildIdAndWho.put( string.valueof(sobj.get(currentzoomSetting.Contact_Lookup_Field__c)), string.valueof(sobj.get('Id')));
+            }
+        }
+        return mapChildIdAndWho;
+    }
+
 }

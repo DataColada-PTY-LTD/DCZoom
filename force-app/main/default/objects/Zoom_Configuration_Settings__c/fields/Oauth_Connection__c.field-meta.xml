@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Oauth_Connection__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>This setting enables the Oauth connection to Zoom. Disable this setting to disconnect the Oauth connection to Zoom.</description>
+    <externalId>false</externalId>
+    <inlineHelpText>Enables the Oauth connection to Zoom. Disables the Oauth connection to Zoom.</inlineHelpText>
+    <label>Oauth Connection</label>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>

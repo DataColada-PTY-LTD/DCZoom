@@ -32,7 +32,7 @@ global with sharing class SFZoom_MeetingHandlerInvocable{
     @InvocableMethod(label='Send Zoom Invitation/Confirmation Email') 
     public static void sendEmailToRegistrant(List<SendEmailRequest> request) {
         if(request[0].whoId!=null  && request[0].parentRecordId!=null){
-          ZoomUtils.sendEmail(request[0].whoId, request[0].autoRegisterFlag, request[0].parentRecordId);
+          SFZoom_Utils.sendEmail(request[0].whoId, request[0].autoRegisterFlag, request[0].parentRecordId);
         }
     }
     

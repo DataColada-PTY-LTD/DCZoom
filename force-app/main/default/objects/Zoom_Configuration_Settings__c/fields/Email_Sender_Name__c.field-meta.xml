@@ -3,7 +3,7 @@
     <fullName>Email_Sender_Name__c</fullName>
     <description>It contains the sender name of the event invitation email</description>
     <externalId>false</externalId>
-    <inlineHelpText>It contains the sender name of the event invitation email</inlineHelpText>
+    <inlineHelpText>Enter the sender name for the event invitation email which is sent to Contacts.</inlineHelpText>
     <label>Email Sender Name</label>
     <length>255</length>
     <required>false</required>

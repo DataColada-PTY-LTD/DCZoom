@@ -2,7 +2,9 @@
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>Send_Thank_you_email_notification__c</fullName>
     <defaultValue>true</defaultValue>
+    <description>Sends a Thank Thank you email notification at the end of the event.</description>
     <externalId>false</externalId>
+    <inlineHelpText>Select this checkbox to send a Thank Thank you email notification at the end of the event.</inlineHelpText>
     <label>Send Thank you email notification</label>
     <trackTrending>false</trackTrending>
     <type>Checkbox</type>

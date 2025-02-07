@@ -1,0 +1,139 @@
+
+
+<template>
+    <lightning-card title="OAuth Settings">
+        <div class="slds-p-around_medium">
+            <lightning-input 
+              type="toggle"
+              label="Enable OAuth"
+              name="enableOAuth"
+              checked={enableOAuthValue}
+              value={enableOAuthValue}
+              disabled={isDisabledButton}
+              onchange={handleInputChange}
+              class="slds-checkbox_toggle"
+              message-toggle-active=""
+              message-toggle-inactive="">
+            </lightning-input>
+
+            <!-- Input Fields Grid -->
+            <div class="slds-grid slds-wrap slds-gutters">
+                <!-- Account ID -->
+                <div class="slds-col slds-size_12-of-12 slds-medium-size_6-of-12 slds-p-around_x-small">
+                    <div class="slds-grid slds-grid_align-spread slds-grid_vertical-align-end">
+                        <div class="slds-grow">
+                            <lightning-input
+                                type={accountIdInputType}
+                                label="Account ID"
+                                name="accountId"
+                                value={accountIdValue}
+                                disabled={isDisabledButton}
+                                onchange={handleInputChange}
+                                field-level-help="Enter the Account Id from the Zoom Server-To-Server OAuth App."
+                            ></lightning-input>
+                        </div>
+                        <lightning-button-icon
+                            icon-name={accountIdIconName}
+                            alternative-text="Toggle Account ID"
+                            onclick={toggleAccountIdVisibility}
+                            class="slds-m-left_x-small"
+                        ></lightning-button-icon>
+                    </div>
+                </div>
+
+                <!-- Client ID -->
+                <div class="slds-col slds-size_12-of-12 slds-medium-size_6-of-12 slds-p-around_x-small">
+                    <div class="slds-grid slds-grid_align-spread slds-grid_vertical-align-end">
+                        <div class="slds-grow">
+                            <lightning-input
+                                type={clientIdInputType}
+                                label="Client ID"
+                                name="clientId"
+                                value={clientIdValue}
+                                disabled={isDisabledButton}
+                                onchange={handleInputChange}
+                                field-level-help="Enter the Client Id from the Zoom Server-To-Server OAuth App."
+                            ></lightning-input>
+                        </div>
+                        <lightning-button-icon
+                            icon-name={clientIdIconName}
+                            alternative-text="Toggle Client ID"
+                            onclick={toggleClientIdVisibility}
+                            class="slds-m-left_x-small"
+                        ></lightning-button-icon>
+                    </div>
+                </div>
+
+                <!-- Client Secret -->
+                <div class="slds-col slds-size_12-of-12 slds-medium-size_6-of-12 slds-p-around_x-small">
+                    <div class="slds-grid slds-grid_align-spread slds-grid_vertical-align-end">
+                        <div class="slds-grow">
+                            <lightning-input
+                                type={clientSecretInputType}
+                                label="Client Secret"
+                                name="clientSecret"
+                                value={clientSecretValue}
+                                disabled={isDisabledButton}
+                                onchange={handleInputChange}
+                                field-level-help="The Client Secret Key"
+                            ></lightning-input>
+                        </div>
+                        <lightning-button-icon
+                            icon-name={clientSecretIconName}
+                            alternative-text="Toggle Client Secret"
+                            onclick={toggleClientSecretVisibility}
+                            class="slds-m-left_x-small"
+                        ></lightning-button-icon>
+                    </div>
+                </div>
+
+                <!-- Webhook Token -->
+                <div class="slds-col slds-size_12-of-12 slds-medium-size_6-of-12 slds-p-around_x-small">
+                    <div class="slds-grid slds-grid_align-spread slds-grid_vertical-align-end">
+                        <div class="slds-grow">
+                            <lightning-input
+                                type={webhookTokenInputType}
+                                label="Webhook Secret Token"
+                                name="webhookSecretToken"
+                                value={webhookSecretTokenValue}
+                                disabled={isDisabledButton}
+                                onchange={handleInputChange}
+                                field-level-help="Enter the Secret Token from the Zoom Server-To-Server OAuth App. Used to verify event notifications sent by Zoom"
+                            ></lightning-input>
+                        </div>
+                        <lightning-button-icon
+                            icon-name={webhookTokenIconName}
+                            alternative-text="Toggle Webhook Token"
+                            onclick={toggleWebhookTokenVisibility}
+                            class="slds-m-left_x-small"
+                        ></lightning-button-icon>
+                    </div>
+                </div>
+
+                <!-- Test OAuth Connectivity -->
+                <div class="slds-col slds-size_12-of-12 slds-medium-size_6-of-12 slds-p-around_x-small">
+                    <h3 class="slds-text-heading_medium slds-m-top_medium">Test OAuth Connectivity</h3>
+                    <lightning-button
+                        disabled={isDisabledButton}
+                        label="Start Test"
+                        variant="brand"
+                        onclick={startOAuthTest}
+                        class="slds-m-top_small"
+                    ></lightning-button>
+                </div>
+
+                <!-- Test Result -->
+                <div class="slds-col slds-size_12-of-12 slds-medium-size_6-of-12 slds-p-around_x-small">
+                    <h3 class="slds-text-heading_medium slds-m-top_medium">Test Result</h3>
+                    <span class={testResultClass}>{testResult}</span>
+                </div>
+            </div>
+
+            <!-- Server Response -->
+            <div class="slds-m-top_small">
+                <label>Server Response</label>
+                <textarea class="slds-textarea" readonly disabled={isDisabledButton}>{serverResponse}</textarea>
+            </div>
+        </div>
+    </lightning-card>
+</template>

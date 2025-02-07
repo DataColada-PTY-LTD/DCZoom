@@ -28,24 +28,32 @@
         Author      : DataColada Pty Ltd
     *******************************************************************************************************************/
     @RestResource(urlMapping='/UpdateMeetingParticipantsDetail')
-    global without sharing class SFZoomServiceToUpdateParticipantsDetails {
+    global without sharing class SFZoom_ServiceToUpdateParticipantsDetail {
+
     /******************************************************************************************************************
         Method Name  : UpdateMeetingParticipantDetails
-        Description  : It process the webhook response and updates the meeting participant details in the salesforce based on the response 
+        Description  : It process the webhook response and updates the meeting participant details in the salesforce based on the response
                        which comes after meeting ends.
         Date         : 01 Nov 2018.
         Author       : DataColada Pty Ltd
         *******************************************************************************************************************/
     @HttpPost
     global static void UpdateMeetingParticipantDetails(){
+
         Zoom_Meeting__c meetingDetails;
         try{
             RestRequest req = RestContext.request;
+            RestResponse resp = RestContext.response;
             Blob body = req.requestBody;
             String contentToParse = body.toString();
             Map<String,Object> mapOfResponse = (Map<String,Object>) JSON.deserializeUntyped(contentToParse);
-            
+
             String webhookEvent = mapOfResponse.containsKey('event') ? String.valueOf(mapOfResponse.get('event')): '';
+            if(webhookEvent != null && 'endpoint.url_validation'.containsIgnoreCase(webhookEvent)) {
+                zoomWebHookValidation(RestContext.request , RestContext.response );
+                return;
+            }
+
             if(mapOfResponse!= null && !mapOfResponse.isEmpty() && String.isNotBlank(webhookEvent)){
                 Map<String,Object> mapOfPayloadData = (Map<String,Object>)mapOfResponse.get('payload');
                 Map<String,Object> mapOfMeetingData;
@@ -58,7 +66,7 @@
                 }
                 if(mapOfMeetingData == null || mapOfMeetingData.isEmpty()){
                     mapOfMeetingData = (Map<String,Object>)mapOfPayloaddata.get('object');
-                } 
+                }
 
                 if(mapOfMeetingData != null && !mapOfMeetingData.isEmpty()){
                     meetingId = String.valueOf(mapOfMeetingData.get('id'));
@@ -75,16 +83,16 @@
                    || webhookEvent.equalsIgnoreCase(Label.Webinar_Ended_Event_Name))){
                         List<Zoom_Meeting__c> listOfZoomMeeting;
                         if(String.isNotBlank(meetingId)){
-                            // False Positive - We have to query meeting details regardless of user's permission.  
+                            // False Positive - We have to query meeting details regardless of user's permission.
                             listOfZoomMeeting = [SELECT Name, Status__c, Event_Type__c,
                                                 Host_Id__c, Auto_Register__c,Thank_you_notification__c,
-                                                Share_Recording_URL__c, Meeting_Recording_URL__c, 
+                                                Share_Recording_URL__c, Meeting_Recording_URL__c,
                                                 Survey_Link_URL__c, Share_Survey_Link__c, Topic__c
-                                                FROM Zoom_Meeting__c 
-                                                WHERE Name = : String.escapeSingleQuotes(meetingId) 
+                                                FROM Zoom_Meeting__c
+                                                WHERE Name = : String.escapeSingleQuotes(meetingId)
                                                 ORDER BY CREATEDDATE DESC LIMIT 1];
-                        
-                        }                
+
+                        }
                         if(listOfZoomMeeting != null && !listOfZoomMeeting.isEmpty()){
                             listOfZoomMeeting[0].Status__c = mapOfMeetingData.get('status') != null ? String.valueOf(mapOfMeetingData.get('status')) : null;
                             listOfZoomMeeting[0].Host_Id__c = mapOfMeetingData.get('host_id') != null ? String.valueOf(mapOfMeetingData.get('host_id')) : null;
@@ -94,27 +102,27 @@
                             // False Positive - We have to update meeting details regardless of user's permission.
                             UPDATE listOfZoomMeeting;
                         }
-                       
+
                 // Handle Registrant Cancellation Event
                 }else if((webhookEvent.equalsIgnoreCase(Label.Meeting_Registration_Cancelled_Event_Name)
-                   	   || webhookEvent.equalsIgnoreCase(Label.Webinar_Registration_Cancelled_Event_Name))){
-                       
+                           || webhookEvent.equalsIgnoreCase(Label.Webinar_Registration_Cancelled_Event_Name))){
+
                        if(!mapOfRegistrantsData.isEmpty()){
-                                                       
+
                            List<Zoom_Meeting__c> listOfZoomMeeting;
                            if(String.isNotBlank(meetingId)){
-                               //False Positive - We have to query meeting details regardless of user's permission.  
-                               listOfZoomMeeting = [SELECT Id, Name, Status__c
-                                                    FROM Zoom_Meeting__c 
-                                                    WHERE Name = : String.escapeSingleQuotes(meetingId) 
+                               //False Positive - We have to query meeting details regardless of user's permission.
+                              listOfZoomMeeting = [SELECT Id, Name, Status__c
+                                                    FROM Zoom_Meeting__c
+                                                    WHERE Name = : String.escapeSingleQuotes(meetingId)
                                                     ORDER BY CREATEDDATE DESC LIMIT 1];
-                               
+
                            }
-                           
+
                            List<Event> listOfEventRecordsToUpdate = FindListOfEventsToTrackAttendance(listOfZoomMeeting[0].Id);
                            // Asumption here is the response will corresponds to one meeting attendance and will have same parent recordId for all Attendees.
                            UpdateEventAndCorrespondingChildRecords(listOfEventRecordsToUpdate, mapOfRegistrantsId, Label.Meeting_Cancelled_Value);
-                          
+
                        }
                 }
             }
@@ -122,7 +130,7 @@
             System.debug('SF Zoom Service To Update Participants Details - Update Meeting Participant Details - Exception: ' + ex.getMessage());
         }
     }
-        
+
     /******************************************************************************************************************
         Method Name  : getMeetingParticipantDetails
         Description  : It calls the Zoom API and get all the participant details based on the meeting UUID.
@@ -131,21 +139,27 @@
         Author       : DataColada Pty Ltd
     *******************************************************************************************************************/
     private static void getMeetingParticipantDetails(List<Zoom_Meeting__c> listOfMeetingInfo){
-        try{
+        // try{
+
+
+            Zoom_Configuration_Settings__c zoomSettings = Zoom_Configuration_Settings__c.getValues('Zoom Settings');
+            String pageSize = String.isNotBlank(zoomSettings.Zoom_API_Page_Size__c) ? zoomSettings.Zoom_API_Page_Size__c : '30';
+
+            //Keep a buffer of participants
             if(!listOfMeetingInfo.isEmpty()){
                 String meetingId = listOfMeetingInfo[0].Name;
                 String eventType = listOfMeetingInfo[0].Event_Type__c;
                 Boolean requireRecordingUrl = listOfMeetingInfo[0].Share_Recording_URL__c;
                 Boolean requireThankyouNotification = listOfMeetingInfo[0].Thank_you_notification__c;
                 String endPointUrl;
-                
+
                 if(String.isNotBlank(meetingId) && String.isNotBlank(eventType)){
                     if(eventType.equalsIgnoreCase(Label.Meeting_Record_Type_Name)){
-                        endPointUrl = Label.Get_Participant_Details_From_Zoom_API + meetingID + '/participants';
+                        endPointUrl = Label.Get_Participant_Details_From_Zoom_API + meetingID + '/participants?page_size='+ pageSize;
                     }else{
-                        endPointUrl = Label.Zoom_Base_EndPoint_URL + 'report/webinars/'+ meetingID + '/participants';
+                        endPointUrl = Label.Zoom_Base_EndPoint_URL + 'report/webinars/'+ meetingID + '/participants?page_size=' + pageSize;
                     }
-                    HttpRequest req = SFZoom_MeetingManagerUtility.constructHttpRequestHeader('GET', endPointUrl); 
+                    HttpRequest req = SFZoom_MeetingManagerUtility.constructHttpRequestHeader('GET', endPointUrl);
                     Http http = new Http();
                     HTTPResponse response = new HTTPResponse();
                     if(!Test.isRunningTest()){
@@ -155,36 +169,41 @@
                         response.setBody(responseBody);
                         response.setStatusCode(200);
                     }
+
                     if(!listOfMeetingInfo.isEmpty()){
                         listOfMeetingInfo[0].Meeting_Participant_Details__c = response.getBody();
                     }
                     if(response.getStatusCode() == 200 && String.isNotBlank(response.getBody())){
                         Map<String, String> mapOfParticipantsIdAndName = FindParticipantsIdWithName(response.getBody());
-                                                
+
                         if(!mapOfParticipantsIdAndName.isEmpty()){
                             List<Event> listOfEventRecordsToUpdate = FindListOfEventsToTrackAttendance(listOfMeetingInfo[0].Id);
-                            
+
                             //Set meeting recorded url on Meeting Recording URL field
                             if(requireRecordingUrl){
                                 setMeetingUrlForAttendees(listOfMeetingInfo);
                             }
 
-                             // Asumption here is the response will corresponds to one meeting attendance and will have same parent recordId for all Attendees.
-                             UpdateEventAndCorrespondingChildRecords(listOfEventRecordsToUpdate, mapOfParticipantsIdAndName, Label.Meeting_Attended_Value);
+                            try { ///TODO fix this damn thing - 28/03/2023
+                                // Asumption here is the response will corresponds to one meeting attendance and will have same parent recordId for all Attendees.
+                                UpdateEventAndCorrespondingChildRecords(listOfEventRecordsToUpdate, mapOfParticipantsIdAndName, Label.Meeting_Attended_Value);
+                            }
+                            catch(Exception ex) {
+                                System.debug('@@@ exception => ' + ex.getMessage());
+                            }
 
-                             //Send email notification to attendees                             
+                             //Send email notification to attendees
                              if(requireThankyouNotification){
                                  sendEmailNotificationToAttendees(listOfEventRecordsToUpdate, listOfMeetingInfo);
                              }
-                           
+
                         }
                     }
-                    
                 }
             }
-        }Catch(Exception ex){
-            System.debug('SF Zoom Service To Update Participants Details - Get Meeting Participant Details - Exception: ' + ex.getMessage() +' >>>>>>' + ex.getStackTraceString());
-        }
+        // }Catch(Exception ex){
+        //     System.debug('SF Zoom Service To Update Participants Details - Get Meeting Participant Details - Exception: ' + ex.getMessage() +' >>>>>>' + ex.getStackTraceString());
+        // }
     }
 
     /******************************************************************************************************************
@@ -208,7 +227,7 @@
         }
         return mapChildIdAndWho;
     }
-    
+
     public static void UpdateEventAndCorrespondingChildRecords(List<Event> listOfEventRecordsToUpdate, Map<String, String> mapOfParticipantsIdAndName, String strUpdateStatusTo){
 
         String parentObjectName = String.valueOf(listOfEventRecordsToUpdate[0].WhatId.getSObjectType());
@@ -221,39 +240,39 @@
         List<Zoom_Metadata__mdt> lstzoomSetting = SFZoom_MeetingHandlerExtension.getMetadataDetails(parentObjectName);
         Set<Id> setOfAttendees = new Set<Id>();
         for(Event eventVar : listOfEventRecordsToUpdate){
-           setOfAttendees.add(eventVar.whoId);           
+           setOfAttendees.add(eventVar.whoId);
         }
          //False Positive - We have to query lead details regardless of user's permission.
         List<Lead> LeadEmails = [SELECT Id, Email,Name from Lead WHERE ID IN : setOfAttendees];
         String inClause = String.format( '(\'\'{0}\'\')', new List<String> { String.join( new List<Id>(setOfAttendees) , '\',\'') });
         String contactQuery = 'SELECT ID, FirstName, LastName, Name, Email FROM Contact WHERE ID IN '+inClause;
-       	
+
         //False Positive - We have to query contact details regardless of user's permission.
         List<Contact> ContactEmails = (List<Contact>)SFZoom_HandleEventOperation.FetchRecordsWithoutAccessCheck(contactQuery);
-        
+
         Map<String,String> mapOfAttendeeIdWithEmail = new Map<String,String>();
-       
-        
+
+
         for(Contact contactToAdd : ContactEmails ){
-            mapOfAttendeeIdWithEmail.put(contactToAdd.Id, contactToAdd.Email);            
+            mapOfAttendeeIdWithEmail.put(contactToAdd.Id, contactToAdd.Email);
         }
         for(Lead leadToAdd : LeadEmails){
-            mapOfAttendeeIdWithEmail.put(leadToAdd.Id, leadToAdd.Email);            
-        }        
+            mapOfAttendeeIdWithEmail.put(leadToAdd.Id, leadToAdd.Email);
+        }
         if(lstzoomSetting != null && !lstzoomSetting.isEmpty())
-        {            
+        {
             if(lstzoomSetting[0].Attendance_Status_Field_Api_Name__c != null){
-                lstChildRecords = ZoomUtils.extractChildEntries(listOfEventRecordsToUpdate[0].WhatId,lstzoomSetting[0]);
-                mapChildRecords.putAll(lstChildRecords); 
+                lstChildRecords = SFZoom_Utils.extractChildEntries(listOfEventRecordsToUpdate[0].WhatId,lstzoomSetting[0]);
+                mapChildRecords.putAll(lstChildRecords);
                 mapChildIdAndWho = getMapChildandWho(lstChildRecords, lstzoomSetting[0]);
             }
-     
+
             if(strUpdateStatusTo == Label.Meeting_Cancelled_Value && mapOfParticipantsIdAndName!= null && mapOfParticipantsIdAndName.size()>0){
                 zoomRegistrationId = String.valueOf(mapOfParticipantsIdAndName.get('id'));
             }
 
             if(listOfEventRecordsToUpdate != null && !listOfEventRecordsToUpdate.isEmpty()){
-                for(Event eventToUpdate : listOfEventRecordsToUpdate){                    
+                for(Event eventToUpdate : listOfEventRecordsToUpdate){
                     // Update Event Record
                     if(strUpdateStatusTo == Label.Meeting_Attended_Value){
                         if(mapOfParticipantsIdAndName.containsKey(eventToUpdate.Zoom_Registration_Id__c)){
@@ -269,14 +288,13 @@
                     // Update Corresponding child record.
                     if(mapChildIdAndWho!= null && mapChildIdAndWho.size() >0 && mapChildIdAndWho.containsKey(eventToUpdate.WhoId))
                     {
-                        if(mapOfParticipantsIdAndName.containsKey(eventToUpdate.Zoom_Registration_Id__c) 
+                        if(mapOfParticipantsIdAndName.containsKey(eventToUpdate.Zoom_Registration_Id__c)
                            || zoomRegistrationId==eventToUpdate.Zoom_Registration_Id__c
                            || mapOfParticipantsIdAndName.containsKey(mapOfAttendeeIdWithEmail.get(eventToUpdate.whoid))){
-                            sobject sobj =  mapChildRecords.get(mapChildIdAndWho.get(eventToUpdate.WhoId)); 
-                            sobj.put(lstzoomSetting[0].Attendance_Status_Field_Api_Name__c,strUpdateStatusTo);
-                            lstUpdateChildRecords.add(sobj);  
+                            sobject sobj =  mapChildRecords.get(mapChildIdAndWho.get(eventToUpdate.WhoId));
+                            sobj.put(lstzoomSetting[0].Attendance_Status_Field_Api_Name__c,eventToUpdate.Zoom_Meeting_Attendance__c);
+                            lstUpdateChildRecords.add(sobj);
                         }
-                                              
                     }
                 }
                 // False Positive - We have to update Event status regardless of user's permission.
@@ -284,7 +302,7 @@
                 // False Positive - We have to update corresponding Atendee Status details regardless of user's permission.
                 if(lstUpdateChildRecords != null && lstUpdateChildRecords.size() >0){
                     UPDATE lstUpdateChildRecords;
-                }                
+                }
             }
 
         }
@@ -295,9 +313,9 @@
         Description  : It finds participants Details with the id and name
         Parameter1   : response - It contains the response which we got from the API
         Date         : 28 Nov 2018.
-        Author       : DataColada Pty Ltd    
+        Author       : DataColada Pty Ltd
     *******************************************************************************************************************/
-    private static Map<String, String> FindParticipantsIdWithName(String response){
+    public static Map<String, String> FindParticipantsIdWithName(String response){
         Map<String,object> mapOfResponse = (Map<String,object>) JSON.deserializeUntyped(response);
         List<object> listOfParticipantDetails = (List<object>)mapOfResponse.get('participants');
         Map<String, String> mapOfParticipantsIdAndName = new Map<String, String>();
@@ -312,16 +330,16 @@
                     mapOfParticipantsIdAndName.put(participantEmail, String.valueOf(mapOfParticipantDetails.get('name')));
                 }
             }
-        }        
+        }
         return mapOfParticipantsIdAndName;
-    }    
-    
+    }
+
     /******************************************************************************************************************
         Method Name  : FindListOfEventsToTrackAttendance
         Description  : It tracks attendance of actual attendee during meeting.
         Parameter1   : sfMeetingRecordId - It contains salesforce meeting record id.
         Date         : 26 Dec 2018.
-        Author       : DataColada Pty Ltd    
+        Author       : DataColada Pty Ltd
     *******************************************************************************************************************/
     private static List<Event> FindListOfEventsToTrackAttendance(Id sfMeetingRecordId){
         List<Event> listOfEvents;
@@ -332,16 +350,16 @@
         listOfEvents = (List<Event>)SFZoom_HandleEventOperation.FetchRecordsWithoutAccessCheck(eventQuery);
         return listOfEvents;
     }
-    
+
      /******************************************************************************************************************
         Method Name  : SendEmailToAttendedInvitees
-        Description  : It sends Thank you email to all the attendee member 
+        Description  : It sends Thank you email to all the attendee member
         Date         : 04 Mar 2019.
         Parameter1   : List of event records
         Parametet2   : Checkbox value of thank you email
-        Author       : DataColada Pty Ltd    
+        Author       : DataColada Pty Ltd
     *******************************************************************************************************************/
-    private static String sendEmailNotificationToAttendees( List<Event> listOfEventRecordsToUpdate, List<Zoom_Meeting__c> listOfMeetingInfo){        
+    private static String sendEmailNotificationToAttendees( List<Event> listOfEventRecordsToUpdate, List<Zoom_Meeting__c> listOfMeetingInfo){
         String meetingRecordedUrl;
         String shareSurveyLinkUrl;
         String meetingId;
@@ -362,28 +380,30 @@
             requireSurveyLinkNotification = listOfMeetingInfo[0].Share_Survey_Link__c;
             requireRecordedUrlNotification = listOfMeetingInfo[0].Share_Recording_URL__c;
         }
-        
+
         Set<Id> setOfAttendees = new Set<Id>();
-        
+
         for(Event eventVar : listOfEventRecordsToUpdate){
             if('Event'.equalsIgnoreCase(String.valueOf(eventVar.whoId))){
                 setOfAttendees.add(eventVar.whoId);
             }else{
-                setOfAttendees.add(eventVar.whoId);
+                if( eventVar.Zoom_Meeting_Attendance__c == Label.Meeting_Attended_Value ) {
+                    setOfAttendees.add(eventVar.whoId);
+                }
             }
         }
         //False Positive - We have to query lead details regardless of user's permission.
         List<Lead> LeadEmails = [SELECT Id, Email,Name from Lead WHERE ID IN : setOfAttendees];
         String inClause = String.format( '(\'\'{0}\'\')', new List<String> { String.join( new List<Id>(setOfAttendees) , '\',\'') });
         String contactQuery = 'SELECT FirstName, LastName, Name, Email FROM Contact WHERE ID IN '+inClause;
-       	
+
         //False Positive - We have to query contact details regardless of user's permission.
         List<Contact> ContactEmails = (List<Contact>)SFZoom_HandleEventOperation.FetchRecordsWithoutAccessCheck(contactQuery);
-        
+
 
         Map<String,String> mapOfAttendeeIdWithEmail = new Map<String,String>();
         Map<String,String> mapOfAttendeeIdWithName = new Map<String,String>();
-        
+
         for(Contact contactToAdd : ContactEmails ){
             mapOfAttendeeIdWithEmail.put(contactToAdd.Id, contactToAdd.Email);
             mapOfAttendeeIdWithName.put(contactToAdd.Id, contactToAdd.Name);
@@ -395,62 +415,73 @@
 
         String errorMessage;
         String emailSenderName;
-        String mailBody;
-        /*String userName = UserInfo.getUserName();
-        User activeUser = [SELECT Email FROM User WHERE Username = : userName LIMIT 1];
-        String userEmail = activeUser.Email;*/
         String userEmail = UserInfo.getUserEmail();
         List<EmailTemplate> emailTemplateToSend;
+        String htmlEmailTemplate;
+        SFZoom_EmailService.clear();
 
         try{
             //False Positive - We have to query template details regardless of user's permission.
-            emailTemplateToSend = [SELECT htmlValue FROM EmailTemplate 
-                                   WHERE developername = :Label.Attendee_Email_Notification_Template LIMIT 1];
+            emailTemplateToSend = [SELECT htmlValue FROM EmailTemplate WHERE developername = :Label.Attendee_Email_Notification_Template LIMIT 1];
 
             If(!emailTemplateToSend.isEmpty()){
-                mailBody = emailTemplateToSend[0].htmlValue;
+                htmlEmailTemplate = emailTemplateToSend[0].htmlValue;
             }
 
             for(Event attendee : listOfEventRecordsToUpdate){
-                String attendeeName = mapOfAttendeeIdWithName.get(attendee.whoId);
-                String attendeeEmailId = mapOfAttendeeIdWithEmail.get(attendee.whoId);         
 
-                if(String.isBlank(mailBody)){
-                    mailBody = 'Hello '+attendeeName ;
-                }
-                else{
-                    if(requireThankyouNotification){
-                        if(String.isNotBlank(mailBody) && mailBody.containsIgnoreCase(Label.Attendee_Name)){
-                            mailBody = mailBody.replace(Label.Attendee_Name, attendeeName);
+                if(attendee.Zoom_Meeting_Attendance__c == Label.Meeting_Attended_Value ) {
+
+                    String mailBody = htmlEmailTemplate;
+                    String attendeeName = mapOfAttendeeIdWithName.get(attendee.whoId);
+                    String attendeeEmailId = mapOfAttendeeIdWithEmail.get(attendee.whoId);
+
+                    if(String.isBlank(mailBody)){
+                        mailBody = 'Hello '+attendeeName ;
+                    }
+                    else{
+                        if(requireThankyouNotification){
+                            if(String.isNotBlank(mailBody) && mailBody.containsIgnoreCase(Label.Attendee_Name)){
+                                mailBody = mailBody.replace(Label.Attendee_Name, attendeeName);
+                            }
+                        }
+                        mailBody = mailBody.replace(Label.Meeting_Name, String.format(Label.Meeting_Name, new List<String>{meetingId}));
+                        mailBody = mailBody.replace(Label.Event_Type, String.format(Label.Event_Type, new List<String>{eventType}));
+                        mailBody = mailBody.replace(Label.Event_Topic, String.format(Label.Event_Topic, new List<String>{meetingTopic}));
+
+                        if(requireRecordedUrlNotification && String.isNotBlank(meetingRecordedUrl)){
+                               mailBody = mailBody.replace(Label.Recording_Url_Details, String.format(Label.Recording_Url_Details, new List<String>{meetingRecordedUrl}));
+                        }else{
+                               mailBody = mailBody.replace(Label.Recording_Url_Details,String.format('', new List<String>{''}));
+                        }
+
+                        if(requireSurveyLinkNotification && String.isNotBlank(shareSurveyLinkUrl)){
+                               mailBody = mailBody.replace(Label.Survey_Link_Url_Details,String.format(Label.Survey_Link_Url_Details, new List<String>{shareSurveyLinkUrl}));
+                        }else{
+                               mailBody = mailBody.replace(Label.Survey_Link_Url_Details,String.format('', new List<String>{''}));
                         }
                     }
-                    mailBody = mailBody.replace(Label.Meeting_Name, String.format(Label.Meeting_Name, new List<String>{meetingId}));
-                    mailBody = mailBody.replace(Label.Event_Type, String.format(Label.Event_Type, new List<String>{eventType}));
-                    mailBody = mailBody.replace(Label.Event_Topic, String.format(Label.Event_Topic, new List<String>{meetingTopic}));
-                    
-                    if(requireRecordedUrlNotification && String.isNotBlank(meetingRecordedUrl)){
-                           mailBody = mailBody.replace(Label.Recording_Url_Details, String.format(Label.Recording_Url_Details, new List<String>{meetingRecordedUrl}));
-                    }else{
-                           mailBody = mailBody.replace(Label.Recording_Url_Details,String.format('', new List<String>{''})); 
+
+                    if(String.isNotBlank(attendeeEmailId)){
+
+                        SFZoom_EmailService.enqueue(SFZoom_EmailService.createEmailDataObject()
+                                                    .setEmailSubject(Label.Thank_you_email_subject_label)
+                                                    .setHtmlBody(mailBody)
+                                                    .setSenderDisplayName(emailSenderName)
+                                                    .setTargetObjectId(attendee.whoId)
+                        );
                     }
-                    
-                    if(requireSurveyLinkNotification && String.isNotBlank(shareSurveyLinkUrl)){
-                           mailBody = mailBody.replace(Label.Survey_Link_Url_Details,String.format(Label.Survey_Link_Url_Details, new List<String>{shareSurveyLinkUrl})); 
-                    }else{
-                           mailBody = mailBody.replace(Label.Survey_Link_Url_Details,String.format('', new List<String>{''})); 
-                    }
-                }  
-                
-                if(String.isNotBlank(attendeeEmailId)){
-                   SFZoom_MeetingManagerUtility.sendEmail(new List<String> {attendeeEmailId}, null,mailBody, null, emailSenderName, userEmail,Label.Thank_you_email_subject_label, attendee.whoId, null );
                 }
             }
+
+            SFZoom_EmailService.flush();
+
          }Catch(Exception e){
             System.debug('SF Zoom Service To Update Participants Details - Send Thank You Email To Attendees- Exception: ' + e.getMessage());
          }
         return errorMessage;
   }
-   
+
     /******************************************************************************************************************
         Method Name  : setMeetingUrlForAttendees
         Description  : It sets the recording url on Meeting Recording Url field for attendees to sent in email notification
@@ -464,35 +495,36 @@
               String meetingId = listOfMeetingInfo[0].Name;
               String zoomMeetingId = listOfMeetingInfo[0].Id;
               String endPointUrl;
-              
+
               if(String.isNotBlank(meetingId)){
                   endPointUrl = Label.Zoom_Base_EndPoint_URL + 'meetings/'+ meetingId + '/recordings';
               }
-              HttpRequest req = SFZoom_MeetingManagerUtility.constructHttpRequestHeader('GET', endPointUrl); 
+
+              HttpRequest req = SFZoom_MeetingManagerUtility.constructHttpRequestHeader('GET', endPointUrl);
               Http http = new Http();
               HTTPResponse response = new HTTPResponse();
-              
+
               if(!Test.isRunningTest()){
                   response = http.send(req);
               }else{
                   response.setStatusCode(200);
               }
-              
+
               if(!listOfMeetingInfo.isEmpty()){
-                  String playURL = FindRecordingPlayUrl(response.getBody());                    
+                  String playURL = FindRecordingPlayUrl(response.getBody());
                   // False Positive - We have to update meeting details regardless of user's permission.
                   if(string.isNotBlank(playURL)){
-                       listOfMeetingInfo[0].Meeting_Recording_URL__c = playURL; 
+                       listOfMeetingInfo[0].Meeting_Recording_URL__c = playURL;
                        UPDATE listOfMeetingInfo;
                   }
               }
-             
+
           }
       }Catch(Exception ex){
           System.debug('SF Zoom Service To Update Participants Details - set Meeting Url For Attendees - Exception: ' + ex.getMessage());
       }
     }
-    
+
     /******************************************************************************************************************
         Method Name  : FindRecordingPlayUrl
         Description  : It fetches the recorded url from zoom and the recent recorded url link.
@@ -506,12 +538,30 @@
             Map<String,Object> mapOfResponseData = new Map<String, Object>();
             mapOfResponseData = (Map<String,Object>)JSON.deserializeUntyped(responseBody) ;
             if(!mapOfResponseData.isEmpty()){
-                List<Object> listOfRecordings = (List<Object>) mapOfResponseData.get('recording_files'); 
+                List<Object> listOfRecordings = (List<Object>) mapOfResponseData.get('recording_files');
                 if(listOfRecordings != null && !listOfRecordings.isEmpty()){
                     playUrl = String.valueOf(((Map<String, Object>)listOfRecordings[listOfRecordings.size()-1]).get('play_url'));
-                }                
+                }
             }
         }
        return playURL;
-    }   
+    }
+    /**
+     * @description       : Handlew WebHook Validation
+     * @author            : DataColada Pty Ltd
+     * @last modified on  : 16-08-2023
+     * @last modified by  : DataColada Pty Ltd
+    **/
+    public static void zoomWebHookValidation(RestRequest req , RestResponse res) {
+
+        Blob body = req.requestBody;
+        Zoom_Configuration_Settings__c zoomSettings = Zoom_Configuration_Settings__c.getValues('Zoom Settings');
+        Map<String,Object> contents = (Map<String,Object>) JSON.deserializeUntyped(body.toString());
+        Map<String,Object> payload = (Map<String,Object>)contents.get('payload');
+        String plainToken = (String)payload.get('plainToken');
+        Blob signature = Crypto.generateMac('hmacSHA256',Blob.valueOf(plainToken),Blob.valueOf(zoomSettings.Zoom_Webhook_Secret_Token__c));
+        String hashForValidate = EncodingUtil.convertToHex(signature);
+        res.statusCode = 200;
+        res.responseBody = Blob.valueOf('{\"plainToken\": "' + plainToken + '",\"encryptedToken\": "' + hashForValidate + '"}');
+    }
 }

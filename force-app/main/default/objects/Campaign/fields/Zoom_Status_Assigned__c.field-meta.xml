@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Zoom_Status_Assigned__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>Ticked by a Flow after the Campaign Member Statuses for a Zoom Meeting have been created</description>
+    <externalId>false</externalId>
+    <label>Zoom Status Assigned</label>
+    <type>Checkbox</type>
+</CustomField>

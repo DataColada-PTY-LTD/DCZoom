@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>Maximum_Meeting_Duration__c</fullName>
-    <description>It contains the value for maximum meeting duration</description>
+    <description>It contains the value (minutes) for maximum meeting duration</description>
     <externalId>false</externalId>
-    <inlineHelpText>It contains the value for maximum meeting duration</inlineHelpText>
+    <inlineHelpText>Enter the number of minutes for the maximum meeting duration (e.g. 120)</inlineHelpText>
     <label>Maximum Meeting Duration (In Minutes)</label>
     <precision>4</precision>
     <required>false</required>

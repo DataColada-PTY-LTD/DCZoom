@@ -1,0 +1,125 @@
+
+<template>
+  <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+    <div class="slds-grid slds-wrap">
+      <!-- ====================== credentials============== -->
+      <template if:true={credentials}>
+        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-p-around_small">
+          <lightning-input disabled={isDisabled} class="slds-form-element__label" type="text" label="Zoom URL" value={zoomUrlValue} required="true" onchange={handleInputchange} onclick={handleInputClick} name="zoomUrl" field-level-help="Enter the Zoom org URL (e.g. https://zoom.us/)"></lightning-input>
+        </div>
+        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-p-around_small">
+          <lightning-input disabled={isDisabled} class="slds-form-element__label" type="text" label="Zoom User Email" value={zoomUserEmailValue} required="true" onchange={handleInputchange} onclick={handleInputClick} name="zoomUserEmail" field-level-help="Enter the Zoom Account (Profile) User's Email address for whom meeting/webinar needs to be created."></lightning-input>
+        </div>
+        <div class="slds-col slds-size_1-of-1 slds-p-around_small">
+          <lightning-input disabled={isDisabled} class="slds-form-element__label" type="text" label="Site URL" value={siteURLValue} required="true" onchange={handleInputchange} onclick={handleInputClick} name="siteURL" field-level-help="Enter the site URL which is used to accept or decline the event invitation email (e.g - https://datacoladasfzoom-developer-edition.ap5.force.com/)."></lightning-input>
+        </div>
+      </template>
+
+      <!-- ====================== setting============== -->
+      <template if:true={setting}>
+        <div class="slds-col slds-size_1-of-1 slds-medium-size_2-of-3 slds-p-around_small">
+          <lightning-input disabled="true" class="slds-form-element__label" type="text" label="Zoom Account User Id" value={zoomAccUserIdValue} required="true" onchange={handleInputchange} onclick={handleInputClick} name="zoomAccUserId" field-level-help="Setting Containing the Zoom Account User Id, which is populated during Zoom Server-To-Server OAuth connection."></lightning-input>
+        </div>
+        <div class="slds-col slds-size_1-of-1 slds-medium-size_2-of-3 slds-p-around_small">
+          <lightning-input disabled={isDisabled} class="slds-form-element__label" type="text" label="Crypto Key" value={cryptoKeyValue} required="true" onchange={handleInputchange} onclick={handleInputClick} name="cryptoKey" field-level-help="Setting containing the default Crypto Key used to encrypt and decrypt the record id. This can be replaced if required."></lightning-input>
+        </div>
+        <div class="slds-col slds-size_1-of-1 slds-medium-size_2-of-3 slds-p-around_small">
+          <lightning-input disabled="true" class="slds-form-element__label" type="text" label="Zoom Api Page Size" value={zoomApiPageSzValue} required="true" onchange={handleInputchange} onclick={handleInputClick} name="zoomApiPageSz" maxlength="3" field-level-help="Setting that specifies the number of records to return per page in the API response."></lightning-input>
+        </div>
+      </template>
+
+      <!-- ====================== notification ============== -->
+      <template if:true={notification}>
+        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-p-around_small">
+          <lightning-input disabled={isDisabled} class="slds-form-element__label" type="text" label="Email Sender Name" value={emailSenderNameValue} required="true" onchange={handleInputchange} onclick={handleInputClick} name="emailSenderName" field-level-help="Enter the sender name for the event invitation email which is sent to Contacts."></lightning-input>
+        </div>
+
+        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-p-around_small">
+          <lightning-input disabled={isDisabled} class="slds-form-element__label" type="text" label="From Email Address" value={fromEmailAddValue} required="true" onchange={handleInputchange} onclick={handleInputClick} name="fromEmailAdd" field-level-help="Enter a valid email address for the sender email for the event invitation email."></lightning-input>
+        </div>
+
+        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-p-around_small">
+          <label for="enforceLogin" class="slds-form-element__label">Enforce Login
+            <lightning-helptext content="Select this checkbox to enforce Attendees to log in to events to track attendance."></lightning-helptext>
+          </label>
+          <lightning-input disabled={isDisabled} class="slds-form-element__label" type="checkbox" value={enforceLoginValue} onchange={handleInputchange} onclick={handleInputClick} name="enforceLogin" checked={enforceLoginValue} ></lightning-input>
+        </div>
+
+        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-p-around_small">
+          <label for="enforceLogin" class="slds-form-element__label">Thankyou Email Notification
+            <lightning-helptext content="Select this checkbox to send a Thank Thank you email notification at the end of the event."></lightning-helptext>
+          </label>
+          <lightning-input disabled={isDisabled} class="slds-form-element__label" type="checkbox" value={thankEmailNotifyValue} onchange={handleInputchange} onclick={handleInputClick} name="thankEmailNotify" checked={thankEmailNotifyValue} field-level-help=""></lightning-input>
+        </div>
+
+        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-p-around_small">
+          <label for="enforceLogin" class="slds-form-element__label">Share Survey Link
+            <lightning-helptext content="It enables to send the survey link in the Thank you email notification. The Thank you email notification should be enabled for this feature to work."></lightning-helptext>
+          </label>
+           <lightning-input disabled={isDisabled} class="slds-form-element__label" type="checkbox"  value={shareSurveyLinkValue} checked={shareSurveyLinkValue}   onchange={handleInputchange} onclick={handleInputClick}  name="shareSurveyLink" ></lightning-input>
+        </div>
+
+        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-p-around_small">
+          <label for="enforceLogin" class="slds-form-element__label">Share Recording URL
+            <lightning-helptext content="Select this checkbox to send the recording URL in the Thank you email notification. The Thank you email notification should be enabled for this feature to work."></lightning-helptext>
+          </label>
+          <lightning-input disabled={isDisabled} class="slds-form-element__label" type="checkbox"  value={shareRecUrlValue} checked={shareRecUrlValue}   onchange={handleInputchange} onclick={handleInputClick}  name="shareRecUrl" ></lightning-input>
+        </div>
+      </template>
+
+      <!-- ====================== Meeting ============== -->
+      <template if:true={meeting}>
+        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-p-around_small">
+          <lightning-input disabled={isDisabled} class="slds-form-element__label" type="text" label="Minimum Meeting Duration (minutes)" value={minMeetDurationValue} required="true" onchange={handleInputchange} onclick={handleInputClick} name="minMeetDuration" maxlength="4" field-level-help="	Enter the number of minutes for the minimum meeting duration (e.g. 15)"></lightning-input>
+        </div>
+
+        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-p-around_small">
+          <lightning-input disabled={isDisabled} class="slds-form-element__label" type="text" label="Maximum Meeting Duration (minutes)" value={maxMeetDurationValue} required="true" onchange={handleInputchange} onclick={handleInputClick} maxlength="4" name="maxMeetDuration" field-level-help="Enter the number of minutes for the maximum meeting duration (e.g. 120)"></lightning-input>
+        </div>
+
+        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-p-around_small">
+          <label for="enforceLogin" class="slds-form-element__label">Join before host
+            <lightning-helptext content="Select this checkbox to allow participants to join before the host"></lightning-helptext>
+          </label>
+          <lightning-input disabled={isDisabled} class="slds-form-element__label" type="checkbox"  value={joinBeforeHostValue} checked={joinBeforeHostValue}   onchange={handleInputchange} onclick={handleInputClick}  name="joinBeforeHost" ></lightning-input>
+        </div>
+
+        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-p-around_small">
+          <label for="enforceLogin" class="slds-form-element__label">Start participant video on join
+            <lightning-helptext content="Select this checkbox to start the participant video on joining"></lightning-helptext>
+          </label>
+          <lightning-input disabled={isDisabled} class="slds-form-element__label"  type="checkbox"  value={startPartVideoValue} checked={startPartVideoValue}   onchange={handleInputchange} onclick={handleInputClick}  name="startPartVideo" ></lightning-input>
+        </div>
+      </template>
+      <!-- ====================== Webinar ============== -->
+        <template if:true={webinar}>
+        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-p-around_small">
+          <label for="enforceLogin" class="slds-form-element__label">Allow attendees to join from multiple devices
+            <lightning-helptext content="Select this checkbox to allow Attendees to join from multiple devices"></lightning-helptext>
+          </label>
+            <lightning-input disabled={isDisabled} class="slds-form-element__label" type="checkbox"  value={allowAttendesValue} checked={allowAttendesValue}   onchange={handleInputchange} onclick={handleInputClick}  name="allowAttendes" ></lightning-input>
+        </div>
+        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-p-around_small">
+          <label for="enforceLogin" class="slds-form-element__label">By default broadcast host video in HD
+            <lightning-helptext content="Select this checkbox to enable HD video"></lightning-helptext>
+          </label>
+          <lightning-input disabled={isDisabled} class="slds-form-element__label" type="checkbox"  value={byDefaultBroadValue} checked={byDefaultBroadValue}   onchange={handleInputchange} onclick={handleInputClick}  name="byDefaultBroad" ></lightning-input>
+        </div>
+       
+        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-p-around_small">
+          <label for="enforceLogin" class="slds-form-element__label">Start video when host joins webinar
+            <lightning-helptext content="Select this checkbox to start the video when the host joins the webinar"></lightning-helptext>
+          </label>
+            <lightning-input disabled={isDisabled} class="slds-form-element__label" type="checkbox"  value={startVideoHostJoinValue} checked={startVideoHostJoinValue}   onchange={handleInputchange} onclick={handleInputClick}  name="startVideoHostJoin" ></lightning-input>
+        </div>
+        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-p-around_small">
+          <label for="enforceLogin" class="slds-form-element__label">Start video when panellists join webinar
+            <lightning-helptext content="Select this checkbox to start the video when panelists join the webinar"></lightning-helptext>
+          </label>
+          <lightning-input disabled={isDisabled} class="slds-form-element__label" type="checkbox"  value={startVideoPaneJoinValue} checked={startVideoPaneJoinValue}   onchange={handleInputchange} onclick={handleInputClick}  name="startVideoPaneJoin"  ></lightning-input>
+        </div>
+       
+      </template>
+    </div>
+  </div>
+</template>

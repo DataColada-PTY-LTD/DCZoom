@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>Crypto_Key__c</fullName>
-    <description>It contains a crypto key to encrypt and decrypt the record id</description>
+    <description>Setting containing the default Crypto Key used to encrypt and decrypt the record id.</description>
     <externalId>false</externalId>
-    <inlineHelpText>It contains a crypto key to encrypt and decrypt the record id</inlineHelpText>
+    <inlineHelpText>Setting containing the default Crypto Key used to encrypt and decrypt the record id. This can be replaced if required.</inlineHelpText>
     <label>Crypto Key</label>
     <length>255</length>
     <required>false</required>

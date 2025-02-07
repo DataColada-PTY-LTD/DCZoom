@@ -21,22 +21,26 @@
     SOFTWARE.
  */
 @isTest
-global with sharing class VerifyAuthAndSave_CalloutMock implements HttpCalloutMock  {
-
-    /******************************************************************************************************************
-        Method Name  : Mock out the VerifyAuthorizationTokenAndSaveUserId callout method 
-        Description : provide a mock for the callout
-        Date        : 25 Jun 2020.
-        Author      : DataColada Pty Ltd
-	*******************************************************************************************************************/ 
-    global HTTPResponse respond(HTTPRequest request) {
-        
+/**
+ * @description       : ZoomServerToServermock class
+ * @author            : DataColada Pty Ltd
+ * @group             :
+ * @last modified on  : 21-09-2022
+ * @last modified by  : DataColada Pty Ltd
+**/
+public with sharing class SFZoom_ServerToServerOauthMock implements HttpCalloutMock {
+    /**
+     * @description       : provide some test data
+     * @author            : DataColada Pty Ltd
+     * @group             :
+     * @last modified on  : 21-09-2022
+     * @last modified by  : DataColada Pty Ltd
+     **/
+    public HTTPResponse respond(HttpRequest request) {
         HttpResponse response = new HttpResponse();
-      
-        String responseBody = '{"id":"23Qi79NR8_TXqkvj4uV5GBzg","first_name":"beee","last_name":"emmm","email":"admin@datacolada.com","type":2,"pmi":15949687837,"timezone":"Asia/Calcutta","verified":1}';
-        response.setBody(responseBody);
+        response.setBody('{"access_token" : "token1234" , "token_type" : "bearer" , "expires_in": "3599" }');
         response.setStatusCode(200);
-       
-        return response; 
+        response.setStatus('OK');
+        return response;
     }
 }

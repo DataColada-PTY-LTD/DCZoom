@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomPermission xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>Controls the Zoom Statuses Button Visibility on Campaigns</description>
+    <isLicensed>false</isLicensed>
+    <label>Zoom Statuses Permission</label>
+</CustomPermission>

@@ -1,0 +1,64 @@
+<template>
+  <!-- Header -->
+  <article class="slds-card">
+      <div class="slds-page-header slds-p-around_medium">
+      <div class="slds-grid slds-wrap slds-grid_vertical-align-center">
+        <!-- Title Section -->
+        <div class="slds-col slds-size_1-of-1 slds-medium-size_7-of-12">
+          <div class="slds-media">
+            <div class="slds-media__figure">
+              <lightning-icon icon-name="standard:video" alternative-text="Zoom Settings" size="medium" style="border-radius: 20px; background: #FE5C4C;"></lightning-icon>
+            </div>
+            <div class="slds-media__body">
+              <h1 class="slds-page-header__title slds-truncate slds-text-heading_medium">Zoom Settings</h1>
+            </div>
+          </div>
+        </div>
+        <!-- Action Buttons -->
+        <div class="slds-col slds-size_1-of-1 slds-medium-size_5-of-12 slds-text-align_right">
+          <template if:false={showButtons}>
+            <lightning-button label="Edit" onclick={handleEdit}></lightning-button>
+          </template>
+          <template if:true={showButtons}>
+            <lightning-button label="Cancel" onclick={handleCancel}></lightning-button>
+            <lightning-button label="Save" onclick={handleSave} variant="brand" class="slds-m-left_small"></lightning-button>
+          </template>
+        </div>
+      </div>
+    </div>
+
+    <!-- Content Layout -->
+    <div class="slds-grid slds-wrap slds-grid_vertical-stretch" style="min-height: 50vh;">
+      <!-- Navigation Section -->
+        <div class="slds-col slds-size_1-of-1 slds-medium-size_3-of-12 slds-border_right">
+        <lightning-vertical-navigation selected-item={selectedItem} onselect={handleSelect} class="slds-nav-vertical" shaded>
+          <lightning-vertical-navigation-section label="">
+            <lightning-vertical-navigation-item label="Credentials" class={credentialsClass} name="credentials"></lightning-vertical-navigation-item>
+            <lightning-vertical-navigation-item label="OAuth" class={oAuthClass} name="OAuth"></lightning-vertical-navigation-item>
+            <lightning-vertical-navigation-item label="Settings" class={settingsClass} name="setting"></lightning-vertical-navigation-item>
+            <lightning-vertical-navigation-item label="Notifications" class={notificationClass} name="notification"></lightning-vertical-navigation-item>
+            <lightning-vertical-navigation-item label="Meeting" class={meetingClass} name="meeting"></lightning-vertical-navigation-item>
+            <lightning-vertical-navigation-item-badge label="Webinar" class={webinarClass} name="webinar" badge-count={updatedCount}></lightning-vertical-navigation-item-badge>
+          </lightning-vertical-navigation-section>
+        </lightning-vertical-navigation>
+      </div>
+
+      <!-- Main Content Section -->
+      <div class="slds-col slds-size_1-of-1 slds-medium-size_9-of-12">
+        <c-zoom-settings-card
+          credentials={isCredentials}
+          setting={isSetting}
+          notification={isNotification}
+          meeting={isMeeting}
+          webinar={isWebinar}
+          is-edit-mode={isEditMode}
+          config-data={zoomConfigData}>
+        </c-zoom-settings-card>
+
+        <template if:true={isOAuth}>
+          <c-zoom-oauth-card config-data={zoomConfigData} is-edit-mode={isEditMode}></c-zoom-oauth-card>
+        </template>
+      </div>
+    </div>
+  </article>
+</template>

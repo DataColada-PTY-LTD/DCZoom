@@ -4,7 +4,7 @@
     <defaultValue>false</defaultValue>
     <description>It enables to send the recording URL in the Thank you an email notification. The Thank you email notification should be enabled for this feature to work.</description>
     <externalId>false</externalId>
-    <inlineHelpText>It enables to send the recording URL in the Thank you an email notification. The Thank you email notification should be enabled for this feature to work.</inlineHelpText>
+    <inlineHelpText>Select this checkbox to send the recording URL in the Thank you email notification. The Thank you email notification should be enabled for this feature to work.</inlineHelpText>
     <label>Share Recording URL</label>
     <trackTrending>false</trackTrending>
     <type>Checkbox</type>

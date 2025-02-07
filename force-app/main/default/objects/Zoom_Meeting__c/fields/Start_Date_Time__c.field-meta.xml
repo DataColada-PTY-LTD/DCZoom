@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Start_Date_Time__c</fullName>
+    <externalId>false</externalId>
+    <formula>/*(
+				DATETIMEVALUE(
+								TEXT(YEAR(Start_Date__c)) 
+								+&quot;-&quot; 
+								+TEXT(MONTH(Start_Date__c)) 
+								+&quot;-&quot; 
+								+TEXT(DAY(Start_Date__c)) 
+								+&quot; &quot; 
+								+TEXT(VALUE(LEFT(TEXT(Start_Time__c), 2))) 
+								+MID(TEXT(Start_Time__c),3,2) 
+								+&quot;:00&quot;
+				)
+)*/
+DATETIMEVALUE(TEXT(Start_Date__c) + &quot; &quot; + LEFT(TEXT(Start_Time__c), 8))</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Start Date Time (GMT)</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>DateTime</type>
+</CustomField>

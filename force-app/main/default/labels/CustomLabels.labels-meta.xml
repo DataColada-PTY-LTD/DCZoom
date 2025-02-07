@@ -85,6 +85,14 @@
         <value>Auto Register</value>
     </labels>
     <labels>
+        <fullName>Auto_Send_Email_Invite</fullName>
+        <categories>Zoom Meeting Manager</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Auto Send Email Invite</shortDescription>
+        <value>Auto Send Email Invite</value>
+    </labels>
+    <labels>
         <fullName>Blank_Field_on_Meeting_Form_Error_Message</fullName>
         <language>en_US</language>
         <protected>true</protected>
@@ -192,9 +200,9 @@
     <labels>
         <fullName>Email_Click_Link_Message</fullName>
         <language>en_US</language>
-        <protected>true</protected>
+        <protected>false</protected>
         <shortDescription>Email Click Link Message</shortDescription>
-        <value>Click here</value>
+        <value>Click here to confirm your attendance</value>
     </labels>
     <labels>
         <fullName>Email_Error_Header_Msg</fullName>
@@ -283,9 +291,9 @@
     <labels>
         <fullName>Event_Invitation_Email_Registration_Details</fullName>
         <language>en_US</language>
-        <protected>true</protected>
+        <protected>false</protected>
         <shortDescription>Event Invitation Email Registration Details</shortDescription>
-        <value>&lt;br/&gt;&lt;br/&gt;Please click on the below link to confirm your availability.&lt;br/&gt;</value>
+        <value>&lt;br/&gt;&lt;br/&gt;Please click on the below link to let us know if you can attend, or if you are unable to make it. You will need to click this link to receive the Zoom link to the event’.&lt;br/&gt;</value>
     </labels>
     <labels>
         <fullName>Event_Invitation_Email_Sender_Name</fullName>
@@ -456,13 +464,6 @@
         <value>Join before Host</value>
     </labels>
     <labels>
-        <fullName>List_User_API</fullName>
-        <language>en_US</language>
-        <protected>true</protected>
-        <shortDescription>List User API</shortDescription>
-        <value>https://api.zoom.us/v2/users</value>
-    </labels>
-    <labels>
         <fullName>Manage_Invitee_List</fullName>
         <language>en_US</language>
         <protected>true</protected>
@@ -514,9 +515,9 @@
     <labels>
         <fullName>Meeting_Agenda</fullName>
         <language>en_US</language>
-        <protected>true</protected>
+        <protected>false</protected>
         <shortDescription>Meeting Agenda</shortDescription>
-        <value>Agenda</value>
+        <value>Description</value>
     </labels>
     <labels>
         <fullName>Meeting_Attended_Value</fullName>
@@ -905,191 +906,295 @@
     </labels>
     <labels>
         <fullName>Thank_you_email_notification_Helper_text</fullName>
+        <categories>Zoom</categories>
         <language>en_US</language>
-        <protected>true</protected>
+        <protected>false</protected>
         <shortDescription>Thank you email notification Helper text</shortDescription>
         <value>Attendee will receive thank you email by checking this checkbox</value>
     </labels>
     <labels>
         <fullName>Thank_you_email_subject_label</fullName>
+        <categories>Zoom</categories>
         <language>en_US</language>
-        <protected>true</protected>
+        <protected>false</protected>
         <shortDescription>Thank you email subject label</shortDescription>
         <value>Thank you for attending the meeting/webinar</value>
     </labels>
     <labels>
         <fullName>Thankyou_Email_Notification</fullName>
+        <categories>Zoom</categories>
         <language>en_US</language>
-        <protected>true</protected>
+        <protected>false</protected>
         <shortDescription>Thankyou Email Notification</shortDescription>
         <value>Thank You Email Notification</value>
     </labels>
     <labels>
         <fullName>Update_Meeting</fullName>
+        <categories>Zoom</categories>
         <language>en_US</language>
-        <protected>true</protected>
+        <protected>false</protected>
         <shortDescription>Update Meeting</shortDescription>
         <value>Save Meeting</value>
     </labels>
     <labels>
         <fullName>Update_Meeting_Header</fullName>
+        <categories>Zoom</categories>
         <language>en_US</language>
-        <protected>true</protected>
+        <protected>false</protected>
         <shortDescription>Update Meeting Header</shortDescription>
         <value>Update Meeting</value>
     </labels>
     <labels>
         <fullName>Update_Webinar_Button_Label</fullName>
+        <categories>Zoom</categories>
         <language>en_US</language>
-        <protected>true</protected>
+        <protected>false</protected>
         <shortDescription>Update Webinar Button Label</shortDescription>
         <value>Save Webinar</value>
     </labels>
     <labels>
         <fullName>Webhook_Meeting_Ended_Event_Name</fullName>
+        <categories>Zoom</categories>
         <language>en_US</language>
-        <protected>true</protected>
+        <protected>false</protected>
         <shortDescription>Webhook Meeting Ended Event Name</shortDescription>
         <value>meeting_ended</value>
     </labels>
     <labels>
         <fullName>Webinar_Ended_Event_Name</fullName>
+        <categories>Zoom</categories>
         <language>en_US</language>
-        <protected>true</protected>
+        <protected>false</protected>
         <shortDescription>Webinar Ended Event Name</shortDescription>
         <value>webinar.ended</value>
     </labels>
     <labels>
         <fullName>Webinar_Record_Type_Name</fullName>
+        <categories>Zoom</categories>
         <language>en_US</language>
-        <protected>true</protected>
+        <protected>false</protected>
         <shortDescription>Webinar Record Type Name</shortDescription>
         <value>Webinar</value>
     </labels>
     <labels>
         <fullName>Webinar_Registration_Cancelled_Event_Name</fullName>
+        <categories>Zoom</categories>
         <language>en_US</language>
-        <protected>true</protected>
+        <protected>false</protected>
         <shortDescription>Webinar Registration Cancelled Event Name</shortDescription>
         <value>webinar.registration_cancelled</value>
     </labels>
     <labels>
         <fullName>Webinar_Settings</fullName>
+        <categories>Zoom</categories>
         <language>en_US</language>
-        <protected>true</protected>
+        <protected>false</protected>
         <shortDescription>Webinar Settings</shortDescription>
         <value>Webinar Settings</value>
     </labels>
     <labels>
         <fullName>Wrong_event_type</fullName>
+        <categories>Zoom</categories>
         <language>en_US</language>
-        <protected>true</protected>
+        <protected>false</protected>
         <shortDescription>Wrong event type Message</shortDescription>
         <value>Wrong event type</value>
     </labels>
     <labels>
         <fullName>Zoom_API_Key</fullName>
+        <categories>Zoom</categories>
         <language>en_US</language>
-        <protected>true</protected>
+        <protected>false</protected>
         <shortDescription>Zoom API Key</shortDescription>
         <value>Zoom API Key</value>
     </labels>
     <labels>
         <fullName>Zoom_API_Key_Help_Text</fullName>
+        <categories>Zoom</categories>
         <language>en_US</language>
-        <protected>true</protected>
+        <protected>false</protected>
         <shortDescription>Zoom API Key Help Text</shortDescription>
         <value>Zoom API Key</value>
     </labels>
     <labels>
         <fullName>Zoom_API_Secret</fullName>
+        <categories>Zoom</categories>
         <language>en_US</language>
-        <protected>true</protected>
+        <protected>false</protected>
         <shortDescription>Zoom API Secret</shortDescription>
         <value>Zoom API Secret</value>
     </labels>
     <labels>
         <fullName>Zoom_API_Secret_Help_Text</fullName>
+        <categories>Zoom</categories>
         <language>en_US</language>
-        <protected>true</protected>
+        <protected>false</protected>
         <shortDescription>Zoom API Secret Help Text</shortDescription>
         <value>Zoom API Secret Key</value>
     </labels>
     <labels>
         <fullName>Zoom_Auth_Token_Algorithm_Name</fullName>
+        <categories>Zoom</categories>
         <language>en_US</language>
-        <protected>true</protected>
+        <protected>false</protected>
         <shortDescription>Zoom Auth Token Algorithm Name</shortDescription>
         <value>HS256</value>
     </labels>
     <labels>
         <fullName>Zoom_Auth_Token_Prefix</fullName>
+        <categories>Zoom</categories>
         <language>en_US</language>
-        <protected>true</protected>
+        <protected>false</protected>
         <shortDescription>Zoom Auth Token Prefix</shortDescription>
         <value>Bearer</value>
     </labels>
     <labels>
         <fullName>Zoom_Auth_Token_Valitidy_In_Miliseconds</fullName>
+        <categories>Zoom</categories>
         <language>en_US</language>
-        <protected>true</protected>
+        <protected>false</protected>
         <shortDescription>Zoom Auth Token Valitidy In Miliseconds</shortDescription>
         <value>300000</value>
     </labels>
     <labels>
         <fullName>Zoom_Base_EndPoint_URL</fullName>
+        <categories>Zoom</categories>
         <language>en_US</language>
-        <protected>true</protected>
+        <protected>false</protected>
         <shortDescription>Zoom Base EndPoint URL</shortDescription>
         <value>https://api.zoom.us/v2/</value>
     </labels>
     <labels>
-        <fullName>Zoom_Setting_Not_Configured_Error_Message</fullName>
+        <fullName>Zoom_Oauth_Setting</fullName>
         <language>en_US</language>
-        <protected>true</protected>
+        <protected>false</protected>
+        <shortDescription>Oauth Setting</shortDescription>
+        <value>Oauth Settings</value>
+    </labels>
+    <labels>
+        <fullName>Zoom_Setting_Not_Configured_Error_Message</fullName>
+        <categories>Zoom</categories>
+        <language>en_US</language>
+        <protected>false</protected>
         <shortDescription>Zoom Setting Not Configured Error Message</shortDescription>
         <value>Please configure zoom setting to create any zoom meeting/webinar</value>
     </labels>
     <labels>
         <fullName>Zoom_Setting_Page_Title</fullName>
+        <categories>Zoom</categories>
         <language>en_US</language>
-        <protected>true</protected>
+        <protected>false</protected>
         <shortDescription>Zoom Setting Page Title</shortDescription>
         <value>Zoom Settings</value>
     </labels>
     <labels>
         <fullName>Zoom_URL</fullName>
+        <categories>Zoom</categories>
         <language>en_US</language>
-        <protected>true</protected>
+        <protected>false</protected>
         <shortDescription>Zoom URL</shortDescription>
         <value>Zoom URL</value>
     </labels>
     <labels>
         <fullName>Zoom_URL_Help_Text</fullName>
+        <categories>Zoom</categories>
         <language>en_US</language>
-        <protected>true</protected>
+        <protected>false</protected>
         <shortDescription>Zoom URL Help Text</shortDescription>
         <value>Zoom Account URL. Ex - https://zoom.us/j/</value>
     </labels>
     <labels>
         <fullName>Zoom_User_Email</fullName>
+        <categories>Zoom</categories>
         <language>en_US</language>
-        <protected>true</protected>
+        <protected>false</protected>
         <shortDescription>Zoom User Email</shortDescription>
         <value>Zoom User Email</value>
     </labels>
     <labels>
         <fullName>Zoom_User_Email_Help_Text</fullName>
+        <categories>Zoom</categories>
         <language>en_US</language>
-        <protected>true</protected>
+        <protected>false</protected>
         <shortDescription>Zoom User Email Help Text</shortDescription>
         <value>Zoom Account Users Email address for whom meeting/webinar needs to be created.</value>
     </labels>
     <labels>
         <fullName>Zoom_User_Email_Validation_Message</fullName>
+        <categories>Zoom</categories>
         <language>en_US</language>
-        <protected>true</protected>
+        <protected>false</protected>
         <shortDescription>Zoom User Email Validation Message</shortDescription>
         <value>Please provide Zoom User Email Id</value>
+    </labels>
+    <labels>
+        <fullName>Zoom_Webhook_Secret_Token</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Zoom Webhook Secret Token</shortDescription>
+        <value>WebHook Secret Token</value>
+    </labels>
+    <labels>
+        <fullName>Zoom_Webhook_Secret_Token_Help</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Zoom Webhook Secret Token Help</shortDescription>
+        <value>The Webhook Secret Token that is obtained from Zoom</value>
+    </labels>
+    <labels>
+        <fullName>zoom_oauth_Connection</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>oauth connection</shortDescription>
+        <value>Use Oauth</value>
+    </labels>
+    <labels>
+        <fullName>zoom_oauth_Connection_help_text</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Connection help</shortDescription>
+        <value>Activates the new oAuth interface if checked</value>
+    </labels>
+    <labels>
+        <fullName>zoom_oauth_account_id</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>zoom oauth account id</shortDescription>
+        <value>Account Id</value>
+    </labels>
+    <labels>
+        <fullName>zoom_oauth_account_id_help_text</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Account ID</shortDescription>
+        <value>The Account ID</value>
+    </labels>
+    <labels>
+        <fullName>zoom_oauth_client_id</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>client id</shortDescription>
+        <value>Client Id</value>
+    </labels>
+    <labels>
+        <fullName>zoom_oauth_client_id_help_text</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Client Id App</shortDescription>
+        <value>The Id of the client App</value>
+    </labels>
+    <labels>
+        <fullName>zoom_oauth_client_secret</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>client secret</shortDescription>
+        <value>Client Secret</value>
+    </labels>
+    <labels>
+        <fullName>zoom_oauth_client_secret_help_text</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Client Secret Key</shortDescription>
+        <value>The Client Secret Key</value>
     </labels>
 </CustomLabels>

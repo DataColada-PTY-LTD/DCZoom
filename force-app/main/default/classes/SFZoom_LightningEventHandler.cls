@@ -40,26 +40,26 @@ public with sharing class SFZoom_LightningEventHandler {
         Map<String, Object> returnMap;
         try{
             if(String.isNotBlank(sfZoomEventId)){
-                List<String> listOfZoomMeetingFields = new List<String>{'Name', 'Agenda__c', 'Duration__c', 
-                    'Enforce_Login__c', 'Join_before_Host__c', 'Auto_Register__c', 
+                List<String> listOfZoomMeetingFields = new List<String>{'Name', 'Agenda__c', 'Duration__c',
+                    'Enforce_Login__c', 'Join_before_Host__c', 'Auto_Register__c', 'Auto_Send_Email_Invite__c',
                     'Start_Date__c', 'Start_Time__c', 'Time_Zone__c', 'Topic__c',
                     'Start_Participant_Video_on_Meeting_Join__c', 'Meeting_URL__c', 'RecordTypeId',
                     'HD_Video__c', 'Panelist_Video__c', 'Allow_Multiple_Devices__c',
                     'Host_Video__c','Thank_you_notification__c','Share_Survey_Link__c',
                     'Share_Recording_URL__c','Survey_Link_URL__c','Meeting_Recording_URL__c'};
-                if(SFZoom_AccessUtil.hasReadAccess(String.escapeSingleQuotes(sfZoomEventId)) 
-                   && SFZoom_AccessUtil.objectIsAccessible('Zoom_Meeting__c') 
-                   && SFZoom_AccessUtil.objectIsQueryable('Zoom_Meeting__c') 
+                if(SFZoom_AccessUtil.hasReadAccess(String.escapeSingleQuotes(sfZoomEventId))
+                   && SFZoom_AccessUtil.objectIsAccessible('Zoom_Meeting__c')
+                   && SFZoom_AccessUtil.objectIsQueryable('Zoom_Meeting__c')
                    && SFZoom_AccessUtil.fieldsAreAccessible('Zoom_Meeting__c', listOfZoomMeetingFields))
                 {
-                    List<Zoom_Meeting__c> listOfMeetingToEdit = [SELECT Name, Agenda__c, Duration__c, 
+                    List<Zoom_Meeting__c> listOfMeetingToEdit = [SELECT Name, Agenda__c, Duration__c,
                                                                          Enforce_Login__c,Join_before_Host__c,
-                                                                         Start_Date__c, Start_Time__c, Time_Zone__c, 
-                                                                         Topic__c,Start_Participant_Video_on_Meeting_Join__c, 
+                                                                         Start_Date__c, Start_Time__c, Time_Zone__c,
+                                                                         Topic__c,Start_Participant_Video_on_Meeting_Join__c,
                                                                          Meeting_URL__c, Auto_Register__c, RecordType.Name,
                                                                          Thank_you_notification__c,Share_Survey_Link__c,
                                                                          Share_Recording_URL__c,Survey_Link_URL__c,
-                                                                         Meeting_Recording_URL__c
+                                                                         Meeting_Recording_URL__c, Auto_Send_Email_Invite__c
                                                                          FROM Zoom_Meeting__c WHERE ID = :String.escapeSingleQuotes(sfZoomEventId)];
                     String parentId = SFZoom_MeetingManagerUtility.FindParentObjectRecordIdFromZoomMeeting((Id)sfZoomEventId);
                     returnMap = SFZoom_MeetingHandlerExtension.FindInvitationDetails((Id)parentId, (Id)sfZoomEventId);
@@ -70,6 +70,7 @@ public with sharing class SFZoom_LightningEventHandler {
         }Catch(Exception ex){
             System.debug('SFZoom_LightningEventHandler - getZoomEventDetails - Exception: ' + ex.getMessage());
         }
+        System.debug('getZoomEventDetails===>' + returnMap);
         return returnMap;
     }
 
@@ -83,7 +84,7 @@ public with sharing class SFZoom_LightningEventHandler {
     public static Map<String, String> getRecordTypeDetails(){
         Map<String, String> mapOfZoomEventRecordTypeIdWithName = new Map<String, String>();
         try{
-            if(SFZoom_AccessUtil.objectIsAccessible('RecordType') && SFZoom_AccessUtil.objectIsQueryable('RecordType') 
+            if(SFZoom_AccessUtil.objectIsAccessible('RecordType') && SFZoom_AccessUtil.objectIsQueryable('RecordType')
                && SFZoom_AccessUtil.fieldsAreAccessible('RecordType', new List<String>{'DeveloperName', 'SObjectType'}))
             {
                 List<RecordType> listOfZoomRecordType = [SELECT DeveloperName FROM RecordType WHERE SObjectType = 'Zoom_Meeting__c' and isActive = true];
@@ -94,7 +95,7 @@ public with sharing class SFZoom_LightningEventHandler {
         }Catch(Exception ex){
             System.debug('SFZoom_LightningEventHandler - getRecordTypeDetails - Exception: ' + ex.getMessage());
         }
-        return mapOfZoomEventRecordTypeIdWithName;                         
+        return mapOfZoomEventRecordTypeIdWithName;
     }
 
     /******************************************************************************************************************
@@ -111,8 +112,8 @@ public with sharing class SFZoom_LightningEventHandler {
         Map<String, Object> returnResult = new Map<String, Object>();
         try{
             Zoom_Meeting__c zoomMeeting = (Zoom_Meeting__c) JSON.deserialize(jsonObj, Zoom_Meeting__c.class);
-            SFZoom_MeetingHandlerExtension SFZoomMeetingHandlerInstance; 
-            
+            SFZoom_MeetingHandlerExtension SFZoomMeetingHandlerInstance;
+
             if(zoomMeeting.Id == null){
                 if(String.isNotBlank(parentId)){
                     SFZoomMeetingHandlerInstance = new SFZoom_MeetingHandlerExtension(null, (Id) parentId, false);
@@ -121,7 +122,7 @@ public with sharing class SFZoom_LightningEventHandler {
                     Boolean isWebinar;
                     eventType = String.isBlank(eventType) ? '' : eventType.toLowerCase();
                     if(eventType.equalsIgnoreCase(Label.Webinar_Record_Type_Name)){
-                        isWebinar = true; 
+                        isWebinar = true;
                         SFZoomMeetingHandlerInstance.eventType = Label.Webinar_Record_Type_Name;
                     }
                     else if(eventType.equalsIgnoreCase(Label.Meeting_Record_Type_Name)){
@@ -130,22 +131,22 @@ public with sharing class SFZoom_LightningEventHandler {
                     }
                     if(SFZoomMeetingHandlerInstance.eventType != null){
                         String returnMessage = SFZoomMeetingHandlerInstance.CreateMeetingLightning(isWebinar);
-                        
+
                         if(returnMessage instanceof Id){
                             returnResult.put('sfid', returnMessage);
                             returnResult.put('attendees', SFZoom_MeetingHandlerExtension.FindListOfContactOrLeadFromChildRecords((Id)parentId));
                         }else
-                            returnResult.put('error', returnMessage);            
+                            returnResult.put('error', returnMessage);
                     }
                     else
                         returnResult.put('error', Label.Wrong_event_type);
                 }
                 else{
-                    returnResult.put('error', Label.Invalid_Set_up_Object_Detail); 
-                }                     
+                    returnResult.put('error', Label.Invalid_Set_up_Object_Detail);
+                }
             }
             else{
-                SFZoomMeetingHandlerInstance = new SFZoom_MeetingHandlerExtension(zoomMeeting.Id, (Id)parentId, false);                
+                SFZoomMeetingHandlerInstance = new SFZoom_MeetingHandlerExtension(zoomMeeting.Id, (Id)parentId, false);
                 SFZoomMeetingHandlerInstance.zoomMeeting = zoomMeeting;
                 SFZoomMeetingHandlerInstance.eventType = eventType;
                 Datetime toupdate=  DateTime.newInstanceGMT(zoomMeeting.Start_Date__c, zoomMeeting.Start_Time__c);
@@ -155,13 +156,13 @@ public with sharing class SFZoom_LightningEventHandler {
                     returnResult.put('success', Label.Event_updated_successfully);
                 else
                     returnResult.put('error', returnMessage);
-            }            
+            }
         }Catch(Exception ex){
             System.debug('SFZoom_LightningEventHandler - upsertZoomEvent - Exception: ' + ex.getMessage());
-        }        
+        }
         return returnResult;
     }
-    
+
     /******************************************************************************************************************
         Method Name  : getRecordTypeDetails
         Description  : It fetches default meeting/webinar settings.
@@ -173,13 +174,13 @@ public with sharing class SFZoom_LightningEventHandler {
         try{
             SFZoom_MeetingHandlerExtension SFZoomMeetingHandlerInstance = new SFZoom_MeetingHandlerExtension();
             SFZoomMeetingHandlerInstance.zoomMeeting = new Zoom_Meeting__c();
-            return SFZoomMeetingHandlerInstance.LoadExistingConfiguration();  
+            return SFZoomMeetingHandlerInstance.LoadExistingConfiguration();
         }catch(Exception ex){
             System.debug('SFZoom_LightningEventHandler - loadExistingConfiguration - Exception: ' + ex.getMessage());
             return null;
         }
     }
-    
+
    /******************************************************************************************************************
         Method Name  : getRecordTypeDetails
         Description  : It sends invite email to selected attendees.
@@ -212,7 +213,7 @@ public with sharing class SFZoom_LightningEventHandler {
         }
         return returnResult;
     }
-    
+
     /******************************************************************************************************************
         Method Name  : SendThankyou Email
         Description  : It sends Thankyou email to attendees.
@@ -246,5 +247,5 @@ public with sharing class SFZoom_LightningEventHandler {
         }
         return returnResult;
     }
-    
+
 }

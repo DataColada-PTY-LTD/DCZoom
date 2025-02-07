@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>Minimum_Meeting_Duration__c</fullName>
-    <description>It contains the value for minimum meeting duration</description>
+    <description>It contains the value (minutes) for minimum meeting duration</description>
     <externalId>false</externalId>
-    <inlineHelpText>It contains the value for minimum meeting duration</inlineHelpText>
+    <inlineHelpText>Enter the number of minutes for the minimum meeting duration (e.g. 15)</inlineHelpText>
     <label>Minimum Meeting Duration (In Minutes)</label>
     <precision>4</precision>
     <required>false</required>

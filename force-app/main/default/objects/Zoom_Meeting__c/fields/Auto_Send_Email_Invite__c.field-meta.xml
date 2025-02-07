@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Auto_Send_Email_Invite__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>Check to send email invitations to the newly added campaign members.</description>
+    <externalId>false</externalId>
+    <inlineHelpText>Check to send email invitations to the newly added campaign members.</inlineHelpText>
+    <label>Auto Send Email Invite</label>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>

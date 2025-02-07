@@ -22,7 +22,7 @@
  */
 
 @isTest(seeAllData = false)
-public class ZoomUtils_Test {
+public class SFZoom_Utils_Test {
     
     /******************************************************************************************************************
         Method Name  : testWebinarSave
@@ -67,9 +67,9 @@ public class ZoomUtils_Test {
         PageReference meetingRef = meetinghandlerExtensionTest.CreateWebinar(); 
         System.assertEquals(null,meetingRef);
         //For AutoRegister = true
-        ZoomUtils.sendEmail(testLead.Id,true,campaignToTest.Id); 
+        SFZoom_Utils.sendEmail(testLead.Id,true,campaignToTest.Id); 
         //For AutoRegister = false
-        ZoomUtils.sendEmail(testLead.Id,false,campaignToTest.Id); 
+        SFZoom_Utils.sendEmail(testLead.Id,false,campaignToTest.Id); 
         Test.stopTest();
         List<Zoom_Meeting__c> listOfCreatedZoomMeetings = [SELECT Duration__c FROM Zoom_Meeting__c];
         //System.assertEquals(1, listOfCreatedZoomMeetings.size());  

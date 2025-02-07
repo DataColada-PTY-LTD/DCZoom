@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>Zoom_Account_User_Id__c</fullName>
-    <description>It saves configured zoom account user id</description>
+    <description>Setting Containing the Zoom Account User Id, which is populated during Zoom Server-To-Server OAuth connection.</description>
     <externalId>false</externalId>
-    <inlineHelpText>It saves configured zoom account user id</inlineHelpText>
+    <inlineHelpText>Setting Containing the Zoom Account User Id, which is populated during Zoom Server-To-Server OAuth connection.</inlineHelpText>
     <label>Zoom Account User Id</label>
     <length>255</length>
     <required>false</required>

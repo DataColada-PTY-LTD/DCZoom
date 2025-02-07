@@ -27,14 +27,15 @@
     Date        : 01 Nov 2018.
     Author       : DataColada Pty Ltd
 *******************************************************************************************************************/
-public with sharing class SFZoom_ConfigDetailsController {
+public without sharing class SFZoom_ConfigDetailsController {
     public Zoom_Configuration_Settings__c configEmailSettings{get;set;}
-    public String zoomAPIKey {get; set;} 
+    public String zoomAPIKey {get; set;}
     public String ZoomAPISecret {get; set;}
     public String ZoomUserEmail {get; set;}
     public String ZoomURL {get; set;}
     public String SiteURL {get; set;}
     public String EmailSenderName {get; set;}
+    public String fromEmailAddress {get; set;}
     public Integer minimumMeetingDuration {get; set;}
     public Integer maximumMeetingDuration {get; set;}
     public Boolean joinBeforeHost {get; set;}
@@ -47,16 +48,23 @@ public with sharing class SFZoom_ConfigDetailsController {
     public Boolean shareRecordingURL {get;set;}
     //Webinar config
     public Boolean allowMultipleDevices {get; set; }
-    public Boolean defaultsToHDVideo {get; set; } 
+    public Boolean defaultsToHDVideo {get; set; }
     public Boolean startVideoWhenHostJoin {get; set; }
     public Boolean startVideoWhenPanelistJoin {get; set; }
-        
+    public Boolean fromEmailOption {get; set; }
+    //adding new oauth configuration information
+    public String zoomOauthAccountId {get; set;}
+    public String zoomOauthClientId {get; set;}
+    public String zoomOauthClientSecret {get; set;}
+    public Boolean zoomOauthConnection {get; set;}
+    public String zoomWebHookSecretToken {get; set;}
+
     private Id metaDataRecordId;
-    
+
     // Constructor to load existing configuration if saved earlier
     public SFZoom_ConfigDetailsController(){
         configEmailSettings = new Zoom_Configuration_Settings__c();
-        try{            
+        try{
             isUpdate = false;
             isRecordExist = false;
             LoadConfigurationDetails();
@@ -65,7 +73,7 @@ public with sharing class SFZoom_ConfigDetailsController {
             ApexPages.addmessage(new ApexPages.message(ApexPages.severity.ERROR,ex.getMessage()));
         }
     }
-    
+
     /******************************************************************************************************************
         Method Name  : resetThankYouSetting
         Description  : It resets share survey link and share recording url checkboxes if thank you notification checkbox made unchecked
@@ -79,7 +87,7 @@ public with sharing class SFZoom_ConfigDetailsController {
         }
         return null;
     }
-    
+
     /******************************************************************************************************************
         Method Name  : SaveConfigurationDetails
         Description  : It saves all the configuration details in a custom setting.
@@ -94,20 +102,24 @@ public with sharing class SFZoom_ConfigDetailsController {
                 configToSave.Zoom_API_Key__c = zoomAPIKey;
                 configToSave.Zoom_API_Secret__c = ZoomAPISecret;
                 configToSave.Zoom_Integration_User_Email__c = ZoomUserEmail;
-                SFZoom_JWT_HS256 myJWT = new SFZoom_JWT_HS256(Label.Zoom_Auth_Token_Algorithm_Name, zoomAPIKey, ZoomAPISecret, 
+                SFZoom_JWT_HS256 myJWT = new SFZoom_JWT_HS256(Label.Zoom_Auth_Token_Algorithm_Name, zoomAPIKey, ZoomAPISecret,
                                                               Integer.valueOf(Label.Zoom_Auth_Token_Valitidy_In_Miliseconds));
                 configToSave.Zoom_Authorization_Token__c = myJWT.generateAuthToken();
-                String zoomAccountUserId = VerifyAuthorizationTokenAndSaveUserId(configToSave.Zoom_Authorization_Token__c,configToSave.Zoom_Integration_User_Email__c);
+
+                String zoomAccountUserId = VerifyAuthorizationTokenAndSaveUserId( zoomOauthConnection ? 'Bearer ' + SFZoom_ServerToServerOauth.Instance().getAccessToken() : configToSave.Zoom_Authorization_Token__c ,
+                                                                                  configToSave.Zoom_Integration_User_Email__c);
+
                 if(String.isNotBlank(zoomAccountUserId)){
                     configToSave.Zoom_Account_User_Id__c = zoomAccountUserId;
                 }else{
                     ApexPages.addmessage(new ApexPages.message(ApexPages.severity.ERROR, Label.Auth_Token_Error_Message));
                     return null;
                 }
-                
+
                 configToSave.Zoom_URL__c = ZoomURL;
                 configToSave.Site_URL__c = siteURL.endsWith('/') ? siteURL : siteURL + '/';
                 configToSave.Email_Sender_Name__c = emailSenderName;
+                configToSave.From_Email_Address__c = fromEmailAddress;
                 configToSave.Minimum_Meeting_Duration__c = minimumMeetingDuration != null ? minimumMeetingDuration : Integer.valueOf(Label.Minimum_Meeting_Duration);
                 configToSave.Maximum_Meeting_Duration__c = maximumMeetingDuration != null ? maximumMeetingDuration : Integer.valueOf(Label.Maximum_Meeting_Duration);
                 configToSave.Join_Before_Host__c = joinBeforeHost;
@@ -116,14 +128,22 @@ public with sharing class SFZoom_ConfigDetailsController {
                 configToSave.Share_Survey_Link__c =  shareSurveyLink;
                 configToSave.Start_Participant_Video_on_Join__c = startParticipantVideo;
                 configToSave.Enforce_Login__c = enforceLogin;
-                
+
                 //Webinar config starts
                 configToSave.Allow_Multiple_Devices__c = allowMultipleDevices;
                 configToSave.HD_Video__c = defaultsToHDVideo;
                 configToSave.Host_Video__c = startVideoWhenHostJoin;
                 configToSave.Panelist_Video__c = startVideoWhenPanelistJoin;
                 //Webinar config ends
-                
+
+                //oauth config starts
+                configToSave.Oauth_Account_Id__c =zoomOauthAccountId;
+                configToSave.Oauth_Client_Id__c = zoomOauthClientId;
+                configToSave.oauth_client_secret__c = zoomOauthClientSecret;
+                configToSave.oauth_Connection__c = zoomOauthConnection;
+                configToSave.Zoom_Webhook_Secret_Token__c = zoomWebHookSecretToken;
+                //oauth config ends
+
                 if(isRecordExist){
                     configToSave.Id = metaDataRecordId;
                 }else{
@@ -131,24 +151,26 @@ public with sharing class SFZoom_ConfigDetailsController {
                 }
                 List<String> zoomConfigFields = new List<String>{
                     'Start_Participant_Video_on_Join__c', 'Site_URL__c',
-                    'Host_Video__c','HD_Video__c','Allow_Multiple_Devices__c','Name', 
-                    'Zoom_API_Key__c', 'Zoom_API_Secret__c', 'Zoom_URL__c', 
+                    'Host_Video__c','HD_Video__c','Allow_Multiple_Devices__c','Name',
+                    'Zoom_API_Key__c', 'Zoom_API_Secret__c', 'Zoom_URL__c',
                     'Email_Sender_Name__c', 'Join_Before_Host__c', 'Crypto_Key__c',
                     'Enforce_Login__c','Send_Thank_you_email_notification__c',
-                    'Share_Recording_URL__c','Share_Survey_Link__c',    
+                    'Share_Recording_URL__c','Share_Survey_Link__c',
                     'Zoom_Authorization_Token__c', 'Zoom_Account_User_Id__c','Zoom_Integration_User_Email__c',
-                    'Minimum_Meeting_Duration__c', 'Maximum_Meeting_Duration__c'};
-                if(SFZoom_AccessUtil.objectIsCreatable('Zoom_Configuration_Settings__c') && 
-                    SFZoom_AccessUtil.fieldsAreCreatable('Zoom_Configuration_Settings__c', zoomConfigFields) && 
-                    SFZoom_AccessUtil.objectIsUpdateable('Zoom_Configuration_Settings__c') && 
+                    'Minimum_Meeting_Duration__c', 'Maximum_Meeting_Duration__c',
+                    'oauth_Connection__c','Oauth_Account_Id__c','Oauth_Client_Id__c','oauth_client_secret__c','Zoom_Webhook_Secret_Token__c'
+                };
+                if(SFZoom_AccessUtil.objectIsCreatable('Zoom_Configuration_Settings__c') &&
+                    SFZoom_AccessUtil.fieldsAreCreatable('Zoom_Configuration_Settings__c', zoomConfigFields) &&
+                    SFZoom_AccessUtil.objectIsUpdateable('Zoom_Configuration_Settings__c') &&
                     SFZoom_AccessUtil.fieldsAreUpdateable('Zoom_Configuration_Settings__c', zoomConfigFields)){
                     UPSERT configToSave;
                     isRecordExist = true;
                     isUpdate = false;
                 }else{
                     ApexPages.addmessage(new ApexPages.message(ApexPages.severity.ERROR, Label.Insufficient_Error_Message));
-                }       
-            }            
+                }
+            }
         }Catch(Exception ex){
             System.debug('SFZoom_ConfigDetailsController - SaveConfigurationDetails - Exception: ' + ex.getMessage());
             ApexPages.addmessage(new ApexPages.message(ApexPages.severity.ERROR, Label.Apex_Exception_Error_Message));
@@ -162,10 +184,11 @@ public with sharing class SFZoom_ConfigDetailsController {
         Date         : 10 Jan 2019.
         Author       : DataColada Pty Ltd
     *******************************************************************************************************************/
+    @TestVisible
     private Boolean validateConfigurationDetails(){
-        
-        if(String.isBlank(zoomAPIKey) || String.isBlank(ZoomAPISecret) || String.isBlank(ZoomURL) || 
-            String.isBlank(SiteURL) || String.isBlank(emailSenderName) || 
+
+        if(String.isBlank(zoomAPIKey) || String.isBlank(ZoomAPISecret) || String.isBlank(ZoomURL) ||
+            String.isBlank(SiteURL) || String.isBlank(emailSenderName) ||
             minimumMeetingDuration == null || maximumMeetingDuration == null){
             ApexPages.addmessage(new ApexPages.message(ApexPages.severity.ERROR, Label.Required_Field_Missing_Error_Message));
             return false;
@@ -180,7 +203,7 @@ public with sharing class SFZoom_ConfigDetailsController {
             return false;
         }return true;
     }
-    
+
     /******************************************************************************************************************
         Method Name  : VerifyAuthorizationTokenAndSaveUserId
         Description  : It calls the Zoom List User API and fetch the Zoom Account user Id. It also verifies the token is working or not.
@@ -188,25 +211,30 @@ public with sharing class SFZoom_ConfigDetailsController {
         Date         : 01 Nov 2018.
         Author       : DataColada Pty Ltd
     *******************************************************************************************************************/
-    private static String VerifyAuthorizationTokenAndSaveUserId(String accessToken, String ZoomUserEmail){
+    public static String VerifyAuthorizationTokenAndSaveUserId(String accessToken, String ZoomUserEmail){
         String zoomAccountUserId;
         HttpRequest req = new HttpRequest();
-        req.setEndpoint(Label.List_User_API + '/' + ZoomUserEmail);
-        req.setMethod('GET');  
+        // req.setEndpoint(Label.List_User_API + '/' + ZoomUserEmail);
+        req.setEndpoint('https://api.zoom.us/v2/users' + '/' + ZoomUserEmail);
+        req.setMethod('GET');
         req.setTimeout(120000);
-        req.setHeader('Content-Type', 'application/json');   
+        req.setHeader('Content-Type', 'application/json');
         req.setHeader('Authorization', AccessToken);
+
+        System.debug('@@@ endoint => ' + req.getEndpoint());
+
         Http http = new Http();
         HTTPResponse response = new HTTPResponse();
         response = http.send(req);
-        
-        Map<String,Object> mapOfResponse = (Map<String,Object>) JSON.deserializeUntyped(response.getBody());        
+
+        System.debug('@@@ response body => ' + response.getBody());
+        Map<String,Object> mapOfResponse = (Map<String,Object>) JSON.deserializeUntyped(response.getBody());
         if(response.getStatusCode() == 200 && mapOfResponse.containsKey('id')){
-             zoomAccountUserId = String.valueOf(mapOfResponse.get('id'));                    
+             zoomAccountUserId = String.valueOf(mapOfResponse.get('id'));
         }
         return zoomAccountUserId;
     }
-    
+
     /******************************************************************************************************************
         Method Name  : EditConfigurationDetails
         Description  : It enables the edit mode to update the saved configuration details on the VF Page.
@@ -216,7 +244,7 @@ public with sharing class SFZoom_ConfigDetailsController {
     public void EditConfigurationDetails(){
         isUpdate = true;
     }
-    
+
     /******************************************************************************************************************
         Method Name  : CancelConfigurationDetails
         Description  : It cancels the edit mode which allows user to update the saved configuration details on the VF Page.
@@ -232,14 +260,14 @@ public with sharing class SFZoom_ConfigDetailsController {
         }
         return null;
     }
-    
+
     /******************************************************************************************************************
         Method Name  : SaveConfigurationDetails
         Description  : It laods previoulsy saved configuration details from the custom setting.
         Date         : 01 Nov 2018.
         Author       : DataColada Pty Ltd
     *******************************************************************************************************************/
-    private void LoadConfigurationDetails(){ 
+    private void LoadConfigurationDetails(){
         Zoom_Configuration_Settings__c zoomConfigurationDetails = Zoom_Configuration_Settings__c.getValues(Label.Config_Details_Custom_Setting_Name);
         If(zoomConfigurationDetails != null){
             zoomAPIKey = zoomConfigurationDetails.Zoom_API_Key__c;
@@ -248,6 +276,7 @@ public with sharing class SFZoom_ConfigDetailsController {
             ZoomUserEmail = zoomConfigurationDetails.Zoom_Integration_User_Email__c;
             siteURL = zoomConfigurationDetails.Site_URL__c;
             emailSenderName = zoomConfigurationDetails.Email_Sender_Name__c;
+            fromEmailAddress = zoomConfigurationDetails.From_Email_Address__c;
             minimumMeetingDuration = Integer.valueOf(zoomConfigurationDetails.Minimum_Meeting_Duration__c);
             maximumMeetingDuration = Integer.valueOf(zoomConfigurationDetails.Maximum_Meeting_Duration__c);
             joinBeforeHost = zoomConfigurationDetails.Join_Before_Host__c;
@@ -261,9 +290,22 @@ public with sharing class SFZoom_ConfigDetailsController {
             startVideoWhenHostJoin = zoomConfigurationDetails.HD_Video__c;
             startVideoWhenPanelistJoin = zoomConfigurationDetails.Allow_Multiple_Devices__c;
             shareRecordingURL = zoomConfigurationDetails.Share_Recording_URL__c;
-            shareSurveyLink = zoomConfigurationDetails.Share_Survey_Link__c;      
+            shareSurveyLink = zoomConfigurationDetails.Share_Survey_Link__c;
+            zoomOauthAccountId = zoomConfigurationDetails.Oauth_Account_Id__c;
+            zoomOauthClientId = zoomConfigurationDetails.Oauth_Client_Id__c;
+            zoomOauthClientSecret = zoomConfigurationDetails.oauth_client_secret__c;
+            zoomOauthConnection = zoomConfigurationDetails.Oauth_Connection__c;
+            zoomWebHookSecretToken = zoomConfigurationDetails.Zoom_Webhook_Secret_Token__c;
         }
     }
-    
-    
+
+    public List<SelectOption> getFromEmailOptions() {
+        List<SelectOption> fromEmailOptions = new List<SelectOption>();
+        fromEmailOptions.add(new SelectOption(UserInfo.getUserEmail(), 'Current User\'s Email Address <'+UserInfo.getUserEmail()+'>'));
+        for(OrgWideEmailAddress address : [SELECT Address, DisplayName FROM OrgWideEmailAddress]){
+                fromEmailOptions.add(new SelectOption(address.Address, address.DisplayName+' <'+address.Address+'>'));
+        }
+
+        return fromEmailOptions;
+    }
 }

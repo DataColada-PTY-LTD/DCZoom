@@ -29,7 +29,7 @@
 *******************************************************************************************************************/
 public class SFZoom_AccessUtil {
     private static Map<String, Schema.SObjectType> schemaMap = Schema.getGlobalDescribe();
-    
+
     /******************************************************************************************************************
         Method Name  : objectIsUpdateable
         Description  : It checks if an Object is updateable.
@@ -41,20 +41,12 @@ public class SFZoom_AccessUtil {
         try {
             List<Schema.DescribeSObjectResult> describes = Schema.describeSObjects(new String[]{ObjectName});
 
-            if(describes.size() == 0) {
-                return false;
-            } else {
+            if(describes.size() == 0) {return false;}
+            else {
                 Schema.DescribeSObjectResult describe = describes.get(0);
-                if(describe.isUpdateable()) {
-                    return true;
-                } else {
-                    return false;
-                }
+                if(describe.isUpdateable()) {return true;} else {return false;}
             }
-        } catch(Exception ex) {
-            System.debug('Access Check - object Is Updateable - Exception: ' + ex.getMessage());
-            return false;
-        }
+        } catch(Exception ex) {System.debug('Access Check - object Is Updateable - Exception: ' + ex.getMessage());return false;}
     }
 
     /******************************************************************************************************************
@@ -67,20 +59,14 @@ public class SFZoom_AccessUtil {
     public static boolean objectIsCreatable(String ObjectName) {
         try {
             List<Schema.DescribeSObjectResult> describes = Schema.describeSObjects(new String[]{ObjectName});
-            if(describes.size() == 0) {
-                return false;
-            } else {                
-                Schema.DescribeSObjectResult describe = describes.get(0);               
+            if(describes.size() == 0) {return false;}
+            else {
+                Schema.DescribeSObjectResult describe = describes.get(0);
                 if(describe.isCreateable()) {
                     return true;
-                } else {
-                    return false;
-                }
+                } else {return false;}
             }
-        } catch(Exception ex) {
-            System.debug('Access Check - object Is Creatable - Exception: ' + ex.getMessage());
-            return false;
-        }
+        } catch(Exception ex) {System.debug('Access Check - object Is Creatable - Exception: ' + ex.getMessage());return false;}
     }
 
     /******************************************************************************************************************
@@ -94,22 +80,16 @@ public class SFZoom_AccessUtil {
         try {
             List<Schema.DescribeSObjectResult> describes = Schema.describeSObjects(new String[]{ObjectName});
 
-            if(describes.size() == 0) {
-                return false;
-            } else {                
-                Schema.DescribeSObjectResult describe = describes.get(0); 
+            if(describes.size() == 0) {return false;}
+            else {
+                Schema.DescribeSObjectResult describe = describes.get(0);
                 if(describe.isAccessible()) {
                     return true;
-                } else {
-                    return false;
-                }
+                } else {return false;}
             }
-        } catch(Exception ex) {
-            System.debug('Access Check - object Is Accessible - Exception: ' + ex.getMessage());
-            return false;
-        }
-    }    
-    
+        } catch(Exception ex) {System.debug('Access Check - object Is Accessible - Exception: ' + ex.getMessage());return false;}
+    }
+
     /******************************************************************************************************************
         Method Name  : objectIsQueryable
         Description  : It checks if the object being used is queryable
@@ -122,20 +102,16 @@ public class SFZoom_AccessUtil {
             List<Schema.DescribeSObjectResult> describes = Schema.describeSObjects(new String[]{ObjectName});
             if(describes.size() == 0) {
                 return false;
-            } else {                
-                Schema.DescribeSObjectResult describe = describes.get(0); 
+            } else {
+                Schema.DescribeSObjectResult describe = describes.get(0);
                 if(describe.isQueryable()) {
                     return true;
-                } else {
-                    return false;
-                }
+                } else {return false;}
             }
-        } catch(Exception ex) {
-            System.debug('Access Check - object Is Queryable - Exception: ' + ex.getMessage());
-            return false;
+        } catch(Exception ex) {System.debug('Access Check - object Is Queryable - Exception: ' + ex.getMessage());return false;
         }
-    }    
-    
+    }
+
     /******************************************************************************************************************
         Method Name  : deleteRecordsWithAccessCheck
         Description  : It checks if the object being used is deletable
@@ -151,16 +127,12 @@ public class SFZoom_AccessUtil {
                     Database.Delete(listToDelete, allOrNone);
                     return listToDelete;
                 }
-                else{
-                    return null;
-                }
-            }catch(Exception e) {
-                system.debug('Access Check - delete Records With Access Check - Exception ==>'+e.getMessage());
-            }
+                else{return null;}
+            }catch(Exception e) {system.debug('Access Check - delete Records With Access Check - Exception ==>'+e.getMessage());}
         }
         return null;
     }
-    
+
     /******************************************************************************************************************
         Method Name  : fieldsAreUpdateable
         Description  : It checks if the field that the user is attempting to update is updateable
@@ -182,10 +154,7 @@ public class SFZoom_AccessUtil {
                 }
             }
         }
-        catch(Exception e) {
-            system.debug('Access Check - fields Are Updateable - Exception: '+e.getMessage());
-            return false;
-        }
+        catch(Exception e) {system.debug('Access Check - fields Are Updateable - Exception: '+e.getMessage());return false;}
         return permission;
     }
     /******************************************************************************************************************
@@ -207,9 +176,9 @@ public class SFZoom_AccessUtil {
             System.debug('Access Check - get Object Update Access Check - Exception: '+ex.getMessage());
             return false;
         }
-        
+
     }
-    
+
     /******************************************************************************************************************
         Method Name  : fieldsAreAccessible
         Description  : It checks the fields that the user is attempting to query are accessible
@@ -218,7 +187,7 @@ public class SFZoom_AccessUtil {
         Date         : 01 Nov 2018.
         Author       : DataColada Pty Ltd
     *******************************************************************************************************************/
-    public static boolean fieldsAreAccessible(String ObjectName, List<String> FieldNames) {        
+    public static boolean fieldsAreAccessible(String ObjectName, List<String> FieldNames) {
         try {
             List<Schema.DescribeSObjectResult> describes = Schema.describeSObjects(new String[]{ObjectName});
             if(describes.size() == 0) {
@@ -248,7 +217,7 @@ public class SFZoom_AccessUtil {
             return false;
         }
     }
-    
+
     /******************************************************************************************************************
         Method Name  : fieldsAreCreatable
         Description  : It checks the fields that the user is attempting to query are creatable
@@ -257,35 +226,24 @@ public class SFZoom_AccessUtil {
         Date         : 01 Nov 2018.
         Author       : DataColada Pty Ltd
     *******************************************************************************************************************/
-    public static boolean fieldsAreCreatable(String ObjectName, List<String> FieldNames) {        
+    public static boolean fieldsAreCreatable(String ObjectName, List<String> FieldNames) {
         try {
             List<Schema.DescribeSObjectResult> describes = Schema.describeSObjects(new String[]{ObjectName});
-            if(describes.size() == 0) {
-                return false;
-            } else {
+            if(describes.size() == 0) {return false;} else {
                 Schema.DescribeSObjectResult describe = describes.get(0);
                 boolean status;
                 for(String currentField : fieldNames) {
                     Schema.SObjectField result = describe.fields.getMap().get(currentField);
-                    if(result == null) {
-                        status = false;
-                        return status;
-                    }
+                    if(result == null) {status = false;return status;}
 
                     Schema.DescribeFieldResult fr = result.getDescribe();
                     if(fr.isAccessible() && fr.isCreateable()) {
                         status = true;
-                    } else {
-                        status = false;
-                        return status;
-                    }
+                    } else {status = false;return status;}
                 }
                 return status;
             }
-        } catch(Exception ex) {
-            System.debug('Access Check - fields Are Accessible - Exception: ' + ex.getMessage());
-            return false;
-        }
+        } catch(Exception ex) {System.debug('Access Check - fields Are Accessible - Exception: ' + ex.getMessage());return false;}
     }
 
     /******************************************************************************************************************
@@ -299,12 +257,9 @@ public class SFZoom_AccessUtil {
         try {
             UserRecordAccess uAccess = [SELECT RecordId, HasReadAccess FROM UserRecordAccess WHERE UserId=:UserInfo.getUserId() AND RecordId =: Id];
             return uAccess.HasReadAccess;
-        } catch(Exception ex) {
-            System.debug('Access Check - has Read Access - Exception: ' + ex.getMessage());
-            return false;
-        }
+        } catch(Exception ex) {System.debug('Access Check - has Read Access - Exception: ' + ex.getMessage());return false;}
     }
-    
+
     /******************************************************************************************************************
         Method Name  : hasEditAccess
         Description  : It checks that the user has edit access for that particular record which he/she is going to edit/update.
@@ -316,12 +271,9 @@ public class SFZoom_AccessUtil {
         try {
             UserRecordAccess uAccess = [SELECT RecordId, HasEditAccess FROM UserRecordAccess WHERE UserId=:UserInfo.getUserId() AND RecordId =: Id];
             return uAccess.HasEditAccess;
-        } catch(Exception ex) {
-            System.debug('Access Check - has Edit Access - Exception: ' + ex.getMessage());
-            return false;
-        } 
+        } catch(Exception ex) {System.debug('Access Check - has Edit Access - Exception: ' + ex.getMessage());return false;}
     }
-    
+
     /******************************************************************************************************************
         Method Name  : hasDeleteAccess
         Description  : It checks that the user has delete access for that particular record which he/she is going to delete.
@@ -333,10 +285,7 @@ public class SFZoom_AccessUtil {
         try {
             UserRecordAccess uAccess = [SELECT RecordId, HasDeleteAccess FROM UserRecordAccess WHERE UserId=:UserInfo.getUserId() AND RecordId =: Id];
             return uAccess.HasDeleteAccess;
-        } catch(Exception ex) {
-            System.debug('Access check - has Delete Access - Exception: ' + ex.getMessage());
-            return false;
-        }      
+        } catch(Exception ex) {System.debug('Access check - has Delete Access - Exception: ' + ex.getMessage());return false;}
     }
 
     /******************************************************************************************************************
@@ -350,12 +299,9 @@ public class SFZoom_AccessUtil {
         try {
             UserRecordAccess uAccess = [SELECT RecordId, HasDeleteAccess FROM UserRecordAccess WHERE UserId=:UserInfo.getUserId() AND RecordId IN: setOfRecordIds];
             return uAccess.HasDeleteAccess;
-        } catch(Exception ex) {
-            System.debug('Access Check - has Delete Access - Exception: ' + ex.getMessage());
-            return false;
-        }
+        } catch(Exception ex) {System.debug('Access Check - has Delete Access - Exception: ' + ex.getMessage());return false;}
     }
-    
+
     /******************************************************************************************************************
         Method Name  : hasEditAccessMulti
         Description  : It checks that the user has edit access for all those records which he/she is going to edit/update.
@@ -365,7 +311,7 @@ public class SFZoom_AccessUtil {
     *******************************************************************************************************************/
     public static boolean hasEditAccessMulti(Set<Id> setOfRecordIds) {
         try {
-            
+
             Boolean hasEditAccess = false;
 
             UserRecordAccess[] uAccess = [SELECT RecordId, HasEditAccess FROM UserRecordAccess WHERE UserId=:UserInfo.getUserId() AND RecordId IN: setOfRecordIds];
@@ -375,9 +321,6 @@ public class SFZoom_AccessUtil {
 
             return hasEditAccess;
 
-        } catch(Exception ex) {
-            System.debug('Access Check - has Edit Access - Exception: ' + ex.getMessage());
-            return false;
-        }      
+        } catch(Exception ex) {System.debug('Access Check - has Edit Access - Exception: ' + ex.getMessage());return false;}
     }
 }

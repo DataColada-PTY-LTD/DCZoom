@@ -2,9 +2,9 @@
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>Enforce_Login__c</fullName>
     <defaultValue>false</defaultValue>
-    <description>It contains the setting whether the attendee should be logged in</description>
+    <description>Setting to enforce Attendees to log in to events to track attendance</description>
     <externalId>false</externalId>
-    <inlineHelpText>It contains the setting whether the attendee should be logged in</inlineHelpText>
+    <inlineHelpText>Select this checkbox to enforce Attendees to log in to events to track attendance.</inlineHelpText>
     <label>Enforce Login</label>
     <trackTrending>false</trackTrending>
     <type>Checkbox</type>

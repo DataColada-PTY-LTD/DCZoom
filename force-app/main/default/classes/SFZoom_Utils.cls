@@ -21,7 +21,7 @@
     SOFTWARE.
  */
 
-global without sharing class ZoomUtils {
+global without sharing class SFZoom_Utils {
     
     /******************************************************************************************************************
     Method Name  : sendEmail

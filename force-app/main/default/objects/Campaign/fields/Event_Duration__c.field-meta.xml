@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Event_Duration__c</fullName>
+    <description>The Duration of the Event. This is used on the Event Card &amp; Registration Page in Experience site.</description>
+    <externalId>false</externalId>
+    <inlineHelpText>The Duration of the Event for the Event Card &amp; Registration Page on on my.goodthings</inlineHelpText>
+    <label>Event Duration</label>
+    <length>10</length>
+    <required>false</required>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

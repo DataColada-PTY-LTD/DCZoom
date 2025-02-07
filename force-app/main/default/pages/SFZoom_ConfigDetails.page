@@ -21,7 +21,6 @@
     SOFTWARE.
 -->
 <apex:page controller="SFZoom_ConfigDetailsController" sidebar="false" lightningStylesheets="true">
-    
     <apex:stylesheet value="{!URLFOR($Resource.SFZoom_Resource, 'css/SFZoom_CSS.css')}"/>
     <apex:actionstatus id="ZoomCallStatus">
         <apex:facet name="start">
@@ -196,6 +195,46 @@
                                 </div>
                             </fieldset>
                             <!--EMAIL NOTIFICATION SECTION END-->
+
+                            <!-- OAUTH Configuratrion section -->
+                            <fieldset class="slds-form-element slds-form_compound slds-border-around slds-p-around_medium slds-m-top--small">
+                                <legend class="slds-p-left_x-small slds-p-right_x-small">{!HTMLENCODE($Label.Zoom_Oauth_Setting)}</legend>
+                                <div class="slds-form-element__control">
+                                    <div class="slds-form-element__group">
+                                        <div class="slds-form-element__row">
+                                            <div class="slds-form-element slds-size_1-of-2">
+                                                <c:SFZoom_Label_Help_Text isRequired="{!!isRecordExist || isUpdate}" label="{!HTMLENCODE($Label.zoom_oauth_account_id)}" helpText="{!HTMLENCODE($Label.zoom_oauth_account_id_help_text)}" />
+                                                <apex:outputText styleClass="slds-form-element__label" value="{!zoomOauthAccountId}" rendered="{!isRecordExist && !isUpdate}"/>
+                                                <apex:inputText styleClass="slds-input" value="{!zoomOauthAccountId}" rendered="{!!isRecordExist || isUpdate}" />
+                                            </div>
+                                            <div class="slds-form-element slds-size_1-of-2">
+                                                <c:SFZoom_Label_Help_Text isRequired="{!!isRecordExist || isUpdate}" label="{!HTMLENCODE($Label.zoom_oauth_client_id)}" helpText="{!HTMLENCODE($Label.zoom_oauth_client_id_help_text)}" />
+                                                <apex:outputText styleClass="slds-form-element__label" value="{!zoomOauthClientId}" rendered="{!isRecordExist && !isUpdate}"/>
+                                                <apex:inputText styleClass="slds-input" value="{!zoomOauthClientId}" rendered="{!!isRecordExist || isUpdate}" />
+                                            </div>
+                                        </div> 
+                                        <div class="slds-form-element__row">
+                                            <div class="slds-form-element slds-size_1-of-2">
+                                                <c:SFZoom_Label_Help_Text isRequired="{!!isRecordExist || isUpdate}" label="{!HTMLENCODE($Label.zoom_oauth_client_secret)}" helpText="{!HTMLENCODE($Label.zoom_oauth_client_secret_help_text)}" />
+                                                <apex:outputText styleClass="slds-form-element__label" value="{!zoomOauthClientSecret}" rendered="{!isRecordExist && !isUpdate}"/>
+                                                <apex:inputText styleClass="slds-input" value="{!zoomOauthClientSecret}" rendered="{!!isRecordExist || isUpdate}" />
+                                            </div>
+                                            <div class="slds-form-element slds-size_1-of-2">
+                                                <c:SFZoom_Label_Help_Text isRequired="{!!isRecordExist || isUpdate}" label="{!HTMLENCODE($Label.Zoom_Webhook_Secret_Token)}" helpText="{!HTMLENCODE($Label.Zoom_Webhook_Secret_Token_Help)}" />
+                                                <apex:outputText styleClass="slds-form-element__label" value="{!zoomWebHookSecretToken}" rendered="{!isRecordExist && !isUpdate}"/>
+                                                <apex:inputText styleClass="slds-input" value="{!zoomWebHookSecretToken}" rendered="{!!isRecordExist || isUpdate}" />
+                                            </div>
+                                        </div> 
+                                        <div class="slds-form-element__row">
+                                            <div class="slds-form-element slds-size_1-of-2">
+                                                <c:SFZoom_Label_Help_Text isRequired="{!!isRecordExist || isUpdate}" label="{!HTMLENCODE($Label.zoom_oauth_Connection)}" helpText="{!HTMLENCODE($Label.zoom_oauth_Connection_help_text)}" />
+                                                <apex:inputCheckbox value="{!zoomOauthConnection}" disabled="{!isRecordExist && !isUpdate}"/>
+                                            </div>
+                                        </div>                                     
+                                    </div>
+                                </div>
+                            </fieldset>
+                            <!-- OAUTH Configuratrion end section -->
                             
                             <div class="slds-col slds-form slds-p-bottom_small slds-align_absolute-center">
                                 <apex:pageBlockButtons location="bottom" >
