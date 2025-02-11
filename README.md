@@ -19,8 +19,7 @@ The app is Lightning compatible and has a similar UI for both the Salesforce Cla
 1. If the meeting is deleted from the zoom server then all invitees will get a cancelled email, but this is not propagated back to salesforce, therefore the salesforce zoom record is 
    not updated to reflect a cancellation
 
-# Salesforce Installation Package
+# DCZoom Documentation
 
-Below is the salesforce installation package url
-
-Installation url : [dcZoomConnector v1.8 ](https://login.salesforce.com/packaging/installPackage.apexp?p0=04t2x000004H0XF).
+1. Zoom Meeting User Guide : [dcZoomConnector v1.11 ](https://datacolada.atlassian.net/wiki/spaces/CK/pages/3456040961/Zoom+Meeting+User+Guide).
+2. Zoom Meeting Oauth Integration Setup Guide  [dcZoomConnector v1.11 ](https://datacolada.atlassian.net/wiki/spaces/CK/pages/3455975425/Zoom+Meeting+Oauth+Integration+Setup+Guide).
